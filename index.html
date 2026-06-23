@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Статичные переменные для редактора (всегда остаются неизменными) */
+            /* Динамические переменные (меняются из панели) */
             --bg-main: #090615;
             --bg-card: #140f2d;
             --btn-color1: #8a2be2;
@@ -112,7 +112,6 @@
 
         .preview-box { display: flex; flex-direction: column; align-items: center; }
 
-        /* Игровое окно в превью */
         .game-screen {
             background: var(--bg-card);
             border: 2px dashed var(--btn-color1);
@@ -149,50 +148,17 @@
         .participle, .gerund { font-family: 'Roboto'; font-weight: bold; color: var(--block-color); font-size: 14px;} 
         .symbol-block { font-family: 'Orbitron', 'Roboto', sans-serif; font-size: 22px; color: var(--block-color); font-weight: bold; } /* Скобки, знаки препинания */
 
-        /* Кнопки редактора */
-        .editor-btn {
-            background: linear-gradient(90deg, #8a2be2, #00f0ff);
+        .btn {
+            background: linear-gradient(90deg, var(--btn-color1), var(--btn-color2));
             border: none; color: white; padding: 12px 20px; font-family: 'Orbitron', sans-serif; font-weight: bold; text-transform: uppercase; border-radius: 6px; cursor: pointer; box-shadow: 0 0 15px rgba(0,0,0,0.3); transition: opacity 0.2s; width: 100%; margin-top: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
-        .editor-btn:hover { opacity: 0.85; }
-        .editor-btn:active { transform: scale(0.98); }
-
-        /* Кнопки игрового окна */
-        .game-btn-row {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            margin-bottom: 5px;
-            width: 100%;
-        }
-        .game-btn {
-            flex: 1;
-            max-width: 180px;
-            background: linear-gradient(90deg, var(--btn-color1), var(--btn-color2));
-            border: none;
-            color: white;
-            padding: 12px 20px;
-            font-family: 'Orbitron', 'Roboto', sans-serif;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 6px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
-            transition: opacity 0.2s, transform 0.1s;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        .game-btn:hover { opacity: 0.85; }
-        .game-btn:active { transform: scale(0.98); }
-        .game-btn-reset { background: #444; }
+        .btn:hover { opacity: 0.85; }
+        .btn:active { transform: scale(0.98); }
+        .btn-reset { background: #444; box-shadow: none; }
 
         .feedback-msg { text-align: center; font-size: 16px; font-weight: bold; min-height: 22px; margin: 10px 0; }
         .output-box { margin-top: 15px; }
-        
-        /* Скрытое текстовое поле */
-        textarea.code-area { display: none; }
+        textarea.code-area { height: 80px; font-family: monospace; font-size: 11px; resize: none; background: #05030a; margin-bottom: 10px;}
     </style>
 </head>
 <body>
@@ -241,13 +207,13 @@
                         <option value="semi">; Точка с запятой</option>
                     </optgroup>
                 </select>
-                <button type="button" class="editor-btn" style="margin-top:0; width:auto; padding: 0 20px;" onclick="addBlockToAnswer()">Добавить</button>
+                <button type="button" class="btn" style="margin-top:0; width:auto; padding: 0 20px;" onclick="addBlockToAnswer()">Добавить</button>
             </div>
             
             <div style="margin-top:10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
                 <span style="font-size: 12px; color: #a39cb5;">ПРАВИЛЬНАЯ СХЕМА (кликните по блоку, чтобы удалить):</span>
                 <div id="targetSchemaDisplay" style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap; min-height: 35px;"></div>
-                <button type="button" class="editor-btn" style="background:#551a8b; margin-top:10px; padding:5px 10px; font-size:11px;" onclick="clearTargetSchema()">Очистить схему</button>
+                <button type="button" class="btn" style="background:#551a8b; margin-top:10px; padding:5px 10px; font-size:11px;" onclick="clearTargetSchema()">Очистить схему</button>
             </div>
 
             <div class="panel-title" style="margin-top: 20px;">2. Дизайн и Цвета</div>
@@ -294,9 +260,9 @@
             </div>
 
             <div class="output-box">
-                <label>3. Экспорт проекта:</label>
+                <label>3. Готовый код для Genially (Iframe):</label>
                 <textarea id="codeOutput" class="code-area" readonly></textarea>
-                <button type="button" class="editor-btn" id="copyBtn" onclick="generateAndCopyCode()">Сгенерировать код</button>
+                <button type="button" class="btn" id="copyBtn" onclick="copyGeneratedCode()">Скопировать код игры</button>
             </div>
         </div>
 
@@ -345,9 +311,9 @@
 
                 <div class="feedback-msg" id="feedbackMessage"></div>
                 
-                <div class="game-btn-row">
-                    <button class="game-btn game-btn-reset" onclick="clearUserAnswer()">Сбросить</button>
-                    <button class="game-btn" onclick="checkUserAnswer()">Проверить</button>
+                <div class="row" style="margin-top: 10px;">
+                    <button class="btn btn-reset" onclick="clearUserAnswer()">Сбросить</button>
+                    <button class="btn" onclick="checkUserAnswer()">Проверить схему</button>
                 </div>
             </div>
         </div>
@@ -420,16 +386,17 @@
             });
         }
 
-        // Обновление CSS переменных только внутри окна игры (превью)
+        // Обновление CSS переменных из панели
         function updateStyles() {
-            const gameScreen = document.getElementById('gameScreen');
-            gameScreen.style.setProperty('--bg-card', document.getElementById('colCard').value);
-            gameScreen.style.setProperty('--btn-color1', document.getElementById('colBtn1').value);
-            gameScreen.style.setProperty('--btn-color2', document.getElementById('colBtn2').value);
-            gameScreen.style.setProperty('--text-color', document.getElementById('colText').value);
-            gameScreen.style.setProperty('--block-color', document.getElementById('colBlock').value);
-            gameScreen.style.setProperty('--block-size', document.getElementById('sizeBlock').value + 'px');
-            gameScreen.style.fontFamily = document.getElementById('fontSel').value;
+            const root = document.documentElement;
+            root.style.setProperty('--bg-main', document.getElementById('colBg').value);
+            root.style.setProperty('--bg-card', document.getElementById('colCard').value);
+            root.style.setProperty('--btn-color1', document.getElementById('colBtn1').value);
+            root.style.setProperty('--btn-color2', document.getElementById('colBtn2').value);
+            root.style.setProperty('--text-color', document.getElementById('colText').value);
+            root.style.setProperty('--block-color', document.getElementById('colBlock').value);
+            root.style.setProperty('--block-size', document.getElementById('sizeBlock').value + 'px');
+            document.body.style.fontFamily = document.getElementById('fontSel').value;
 
             generateEmbedCode();
         }
@@ -468,7 +435,7 @@
             }
         }
 
-        /* Генерация финального кода для Genially */
+        /* Генерация финального кода для Genially (Решает проблему со сжатием) */
         function generateEmbedCode() {
             const sentence = document.getElementById('sentenceInput').value.replace(/"/g, '&quot;');
             const cBg = document.getElementById('colBg').value;
@@ -488,19 +455,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: ${cBg}; --card: ${cCard}; --btn1: ${cBtn1}; --btn2: ${cBtn2}; --text: ${cText}; --block: ${cBlock}; --bsize: ${size}; }
-        
-        * { box-sizing: border-box; }
-        
-        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        /* Делаем растяжку на 100% для Genially iframe */
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; }
         body { 
             background: var(--bg); color: var(--text); font-family: ${font}; 
-            padding: 12px;
+            padding: 10px; /* Оставили отступ для тени */
         }
         .game-card { 
-            background: var(--card); border: 2px solid var(--block); border-radius: 12px; padding: 20px; 
-            width: 100%; height: 100%;
+            background: var(--card); border: 2px solid var(--block); border-radius: 12px; padding: 15px; 
+            width: 100%; height: 100%; /* ИДЕАЛЬНАЯ РАСТЯЖКА ИГРЫ ПО КОНТЕЙНЕРУ */
             display: flex; flex-direction: column; justify-content: space-between;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5); overflow-y: auto; overflow-x: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5); box-sizing: border-box; overflow-y: auto;
         }
         .header { font-family: 'Orbitron', sans-serif; text-align: center; text-transform: uppercase; color: var(--btn2); margin-bottom: 10px; font-weight: bold;}
         .sentence { font-family: 'Roboto', sans-serif; font-size: 1.2em; text-align: center; margin-bottom: 15px; line-height: 1.3; }
@@ -509,51 +474,25 @@
             display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; 
             padding: 10px; background: rgba(0, 0, 0, 0.4); border-radius: 8px; align-items: center; margin-bottom: 10px;
         }
-        .ans-zone { border: 2px dashed var(--block); min-height: calc(var(--bsize) + 15px); }
+        .ans-zone { border: 1px dashed var(--block); min-height: calc(var(--bsize) + 10px); }
         .block { 
             width: var(--bsize); height: var(--bsize); background: rgba(0,0,0,0.6); border: 2px solid var(--block); border-radius: 6px; 
             display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; transition: transform 0.1s; 
         }
         .block:hover { transform: scale(1.05); }
         
-        /* Стили символов внутри игры (с защитой от схлопывания во Flexbox) */
-        .l-sub { width: 70%; height: 3px; background: var(--block); flex-shrink: 0; }
-        .l-prd { width: 70%; height: 8px; border-top: 3px solid var(--block); border-bottom: 3px solid var(--block); flex-shrink: 0; }
-        .l-obj { width: 70%; height: 3px; border-bottom: 3px dashed var(--block); flex-shrink: 0; }
-        .l-atr { width: 70%; height: 8px; background-image: radial-gradient(circle at 50% 100%, transparent 2px, var(--block) 2px, var(--block) 4px, transparent 4px); background-size: 6px 8px; background-repeat: repeat-x; flex-shrink: 0; }
-        .l-adv { font-family: monospace; font-weight: bold; color: var(--block); font-size: 14px; letter-spacing: 2px; flex-shrink: 0; }
-        .c-hom { width: 18px; height: 18px; border: 2px solid var(--block); border-radius: 50%; flex-shrink: 0; }
-        .t-txt { font-weight: bold; color: var(--block); font-size: 14px; flex-shrink: 0; }
-        .t-sym { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: bold; color: var(--block); flex-shrink: 0; }
+        /* Стили символов внутри игры */
+        .l-sub { width: 70%; height: 2px; background: var(--block); }
+        .l-prd { width: 70%; height: 6px; border-top: 2px solid var(--block); border-bottom: 2px solid var(--block); }
+        .l-obj { width: 70%; border-bottom: 2px dashed var(--block); height: 1px; }
+        .l-atr { text-decoration: underline wavy var(--block) 2px; text-underline-offset: 4px; color: transparent; width: 60%; font-size: 10px; }
+        .l-adv { font-family: monospace; font-weight: bold; color: var(--block); font-size: 14px; letter-spacing: 2px; }
+        .c-hom { width: 18px; height: 18px; border: 2px solid var(--block); border-radius: 50%; }
+        .t-txt { font-weight: bold; color: var(--block); font-size: 14px; }
+        .t-sym { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: bold; color: var(--block); }
         
-        /* Оптимизированный контейнер кнопок */
-        .btn-row { 
-            display: flex; 
-            gap: 15px; 
-            justify-content: center; 
-            align-items: center;
-            margin-top: 20px; 
-            margin-bottom: 5px;
-            width: 100%;
-        }
-        .btn { 
-            flex: 1; 
-            max-width: 180px; 
-            background: linear-gradient(90deg, var(--btn1), var(--btn2)); 
-            border: none; 
-            color: white; 
-            padding: 12px 20px; 
-            font-weight: bold; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            transition: opacity 0.2s, transform 0.1s;
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        .btn:hover { opacity: 0.85; }
-        .btn:active { transform: scale(0.98); }
+        .btn-row { display: flex; gap: 10px; margin-top: auto;}
+        .btn { flex: 1; background: linear-gradient(90deg, var(--btn1), var(--btn2)); border: none; color: white; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
         .btn-reset { background: #444; }
         .fb { text-align: center; font-weight: bold; min-height: 20px; margin: 10px 0; font-size: 14px; }
     </style>
@@ -594,10 +533,8 @@
     </div>
 
     <script>
-        // Использование var вместо const/let исключает фатальные ошибки повторного объявления внутри контейнеров Genially
-        var target = ${schemaStr}; 
-        var user = [];
-        var tpl = {
+        const target = ${schemaStr}; let user = [];
+        const tpl = {
             'main-l': '<span class="t-sym">[</span>', 'main-r': '<span class="t-sym">]</span>', 'sub-l': '<span class="t-sym">(</span>', 'sub-r': '<span class="t-sym">)</span>',
             'subj': '<div class="l-sub"></div>', 'pred': '<div class="l-prd"></div>', 'obj': '<div class="l-obj"></div>', 'attr': '<div class="l-atr">&nbsp;</div>', 'adv': '<div class="l-adv">_._</div>',
             'homo': '<div class="c-hom"></div>', 'part': '<span class="t-txt">/~~/</span>', 'ger': '<span class="t-txt">/._./</span>',
@@ -607,19 +544,13 @@
         function remove(i) { user.splice(i,1); draw(); }
         function reset() { user = []; draw(); document.getElementById('fb').innerText=''; }
         function draw() {
-            var a = document.getElementById('ans'); a.innerHTML = '';
-            user.forEach(function(t, i) { 
-                var e = document.createElement('div'); 
-                e.className = 'block'; 
-                e.innerHTML = tpl[t]; 
-                e.onclick = function() { remove(i); }; 
-                a.appendChild(e); 
-            });
+            const a = document.getElementById('ans'); a.innerHTML = '';
+            user.forEach((t, i) => { const e = document.createElement('div'); e.className = 'block'; e.innerHTML = tpl[t]; e.onclick = () => remove(i); a.appendChild(e); });
         }
         function check() {
-            var f = document.getElementById('fb');
+            const f = document.getElementById('fb');
             if(!user.length) { f.style.color='#ff33a3'; f.innerText='Схема пуста!'; return; }
-            var ok = JSON.stringify(user) === JSON.stringify(target);
+            const ok = JSON.stringify(user) === JSON.stringify(target);
             f.style.color = ok ? 'var(--btn2)' : '#ff33a3';
             f.innerText = ok ? 'Верно! Отличная работа! 🏆' : 'Неверно, попробуйте снова. ❌';
         }
@@ -630,34 +561,21 @@
             document.getElementById('codeOutput').value = outputCode;
         }
 
-        // Генерация и мгновенное копирование без отображения кода на экране
-        function generateAndCopyCode() {
-            generateEmbedCode();
+        function copyGeneratedCode() {
             const copyText = document.getElementById('codeOutput');
-            
-            // Кратковременный показ элемента для возможности захвата фокуса браузером
-            copyText.style.display = 'block';
             copyText.select();
             
             try {
-                if (navigator.clipboard) { 
-                    navigator.clipboard.writeText(copyText.value); 
-                } else { 
-                    document.execCommand('copy'); 
-                }
+                if (navigator.clipboard) { navigator.clipboard.writeText(copyText.value); } 
+                else { document.execCommand('copy'); }
                 const btn = document.getElementById('copyBtn');
-                btn.innerText = 'Скопировано!'; 
-                btn.style.background = '#00ff66'; 
-                btn.style.color = '#000';
+                btn.innerText = 'Скопировано!'; btn.style.background = '#00ff66'; btn.style.color = '#000';
                 setTimeout(() => {
-                    btn.innerText = 'Сгенерировать код';
-                    btn.style.background = 'linear-gradient(90deg, #8a2be2, #00f0ff)';
+                    btn.innerText = 'Скопировать код игры';
+                    btn.style.background = 'linear-gradient(90deg, var(--btn-color1), var(--btn-color2))';
                     btn.style.color = '#fff';
                 }, 2000);
-            } catch (err) { 
-                alert('Не удалось скопировать.'); 
-            }
-            copyText.style.display = 'none'; // Мгновенное скрытие обратно
+            } catch (err) { alert('Не удалось скопировать.'); }
         }
     </script>
 </body>
