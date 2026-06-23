@@ -459,11 +459,12 @@
         html, body { width: 100%; height: 100%; margin: 0; padding: 0; box-sizing: border-box; overflow: hidden; }
         body { 
             background: var(--bg); color: var(--text); font-family: ${font}; 
-            display: flex; justify-content: center; align-items: stretch; padding: 10px;
+            padding: 10px; /* Оставили отступ для тени */
         }
         .game-card { 
             background: var(--card); border: 2px solid var(--block); border-radius: 12px; padding: 15px; 
-            width: 100%; display: flex; flex-direction: column; justify-content: space-between;
+            width: 100%; height: 100%; /* ИДЕАЛЬНАЯ РАСТЯЖКА ИГРЫ ПО КОНТЕЙНЕРУ */
+            display: flex; flex-direction: column; justify-content: space-between;
             box-shadow: 0 0 15px rgba(0,0,0,0.5); box-sizing: border-box; overflow-y: auto;
         }
         .header { font-family: 'Orbitron', sans-serif; text-align: center; text-transform: uppercase; color: var(--btn2); margin-bottom: 10px; font-weight: bold;}
