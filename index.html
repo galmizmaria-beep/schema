@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Конструктор Схем - PRO Редактор</title>
-    <!-- Подключаем шрифты с поддержкой кириллицы -->
+    <!-- Подключаем шрифты для интерфейса Редактора -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Comfortaa:wght@400;700&family=Rubik:wght@400;700&family=PT+Sans:wght@400;700&family=Roboto+Slab:wght@400;700&family=Caveat:wght@400;700&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Фиксированные стили для самого Редактора (не меняются пользователем) */
+        /* Фиксированные стили для самого Редактора */
         body {
             margin: 0;
             padding: 20px;
@@ -19,6 +19,7 @@
             align-items: center;
             min-height: 100vh;
             overflow-x: hidden;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -102,7 +103,6 @@
 
         /* Локальные стили ДЛЯ ИГРЫ (внутри превью-бокса) */
         .game-screen {
-            /* Переменные обновляются через JS */
             --g-bg-card: #140f2d;
             --g-btn-color1: #8a2be2;
             --g-btn-color2: #00f0ff;
@@ -153,7 +153,6 @@
         }
         .schema-block:hover { transform: scale(1.08); box-shadow: 0 0 10px var(--g-block-color); }
 
-        /* Векторные иконки блоков */
         .svg-icon {
             width: 75%;
             height: 75%;
@@ -163,7 +162,6 @@
         .participle, .gerund { font-weight: bold; font-size: 13px; } 
         .symbol-block { font-size: 22px; font-weight: bold; }
 
-        /* Кнопки управления */
         .btn {
             background: linear-gradient(90deg, #8a2be2, #00f0ff);
             border: none; color: white; padding: 12px 20px; font-family: 'Orbitron', sans-serif; font-weight: bold; text-transform: uppercase; border-radius: 6px; cursor: pointer; box-shadow: 0 0 15px rgba(0,0,0,0.3); transition: opacity 0.2s; width: 100%; margin-top: 10px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
@@ -172,7 +170,6 @@
         .btn:active { transform: scale(0.98); }
         .btn-reset { background: #444; box-shadow: none; }
 
-        /* Стили кнопок внутри превью игры */
         .game-screen .btn {
             background: linear-gradient(90deg, var(--g-btn-color1), var(--g-btn-color2));
         }
@@ -197,7 +194,6 @@
             <label>Добавить элементы в правильную схему:</label>
             <div class="row">
                 <select id="blockSelector">
-                    <!-- Члены предложения -->
                     <optgroup label="Члены предложения">
                         <option value="subj">━ Подлежащее</option>
                         <option value="pred">╍ Сказуемое</option>
@@ -205,20 +201,17 @@
                         <option value="attr">~~~ Определение</option>
                         <option value="adv">_._ Обстоятельство</option>
                     </optgroup>
-                    <!-- Обороты и однородные -->
                     <optgroup label="Обороты и однородные">
                         <option value="homo">◯ Однородный</option>
                         <option value="part">/~~/ Причастный оборот</option>
                         <option value="ger">/._./ Деепричастный оборот</option>
                     </optgroup>
-                    <!-- Скобки -->
                     <optgroup label="Скобки">
                         <option value="main-l">[ Главное (нач)</option>
                         <option value="main-r">] Главное (кон)</option>
                         <option value="sub-l">( Придаточное (нач)</option>
                         <option value="sub-r">) Придаточное (кон)</option>
                     </optgroup>
-                    <!-- Знаки препинания -->
                     <optgroup label="Знаки препинания">
                         <option value="comma">, Запятая</option>
                         <option value="dot">. Точка</option>
@@ -231,7 +224,7 @@
             </div>
             
             <div style="margin-top:10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
-                <span style="font-size: 12px; color: #a39cb5;">ПРАВИЛЬНАЯ СХЕМА (кликните по блоку, чтобы удалить):</span>
+                <span style="font-size: 12px; color: #a39cb5;">ПРАВИЛЬНАЯ СХЕМА (кликните для удаления):</span>
                 <div id="targetSchemaDisplay" style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap; min-height: 35px;"></div>
                 <button type="button" class="btn" style="background:#551a8b; margin-top:10px; padding:5px 10px; font-size:11px;" onclick="clearTargetSchema()">Очистить схему</button>
             </div>
@@ -284,16 +277,17 @@
                 </div>
             </div>
 
+            <!-- Шрифт в интерфейсе редактора -->
             <div class="row" style="margin-top: 10px;">
                 <div>
-                    <label>Шрифт игры (кириллица):</label>
+                    <label>Шрифт интерфейса (редактор):</label>
                     <select id="fontSel" onchange="updateStyles()">
                         <option value="'Montserrat', sans-serif">Montserrat</option>
                         <option value="'Comfortaa', sans-serif">Comfortaa (Круглый)</option>
                         <option value="'Rubik', sans-serif">Rubik</option>
                         <option value="'PT Sans', sans-serif">PT Sans</option>
                         <option value="'Roboto Slab', serif">Roboto Slab</option>
-                        <option value="'Caveat', cursive">Caveat (Рукописный)</option>
+                        <option value="'Caveat', cursive">Caveat</option>
                         <option value="'Roboto', sans-serif">Roboto</option>
                         <option value="'Orbitron', sans-serif">Orbitron (Sci-Fi)</option>
                     </select>
@@ -301,7 +295,6 @@
             </div>
 
             <div class="output-box">
-                <!-- Скрыто от пользователя по ТЗ -->
                 <textarea id="codeOutput" style="display: none;" readonly></textarea>
                 <button type="button" class="btn" id="copyBtn" onclick="copyGeneratedCode()">Скопировать код игры</button>
             </div>
@@ -323,13 +316,11 @@
                 <div>
                     <div style="font-size:11px; color:#a39cb5; margin-bottom:5px; text-align:center;">ПАЛИТРА БЛОКОВ:</div>
                     <div class="blocks-palette" style="background: transparent; padding: 0;">
-                        <!-- Скобки -->
                         <div class="schema-block" onclick="userAddBlock('main-l')" title="Главное нач."><div class="symbol-block">[</div></div>
                         <div class="schema-block" onclick="userAddBlock('main-r')" title="Главное кон."><div class="symbol-block">]</div></div>
                         <div class="schema-block" onclick="userAddBlock('sub-l')" title="Придаточное нач."><div class="symbol-block">(</div></div>
                         <div class="schema-block" onclick="userAddBlock('sub-r')" title="Придаточное кон."><div class="symbol-block">)</div></div>
                         
-                        <!-- Члены предложения (Векторные) -->
                         <div class="schema-block" onclick="userAddBlock('subj')" title="Подлежащее">
                             <svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
                         </div>
@@ -346,14 +337,12 @@
                             <svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
                         </div>
                         
-                        <!-- Обороты и однородные -->
                         <div class="schema-block" onclick="userAddBlock('homo')" title="Однородный член">
                             <svg class="svg-icon" viewBox="0 0 40 40"><circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="3"/></svg>
                         </div>
                         <div class="schema-block" onclick="userAddBlock('part')" title="Причастный оборот"><div class="participle">/~~/</div></div>
                         <div class="schema-block" onclick="userAddBlock('ger')" title="Деепричастный оборот"><div class="gerund">/._./</div></div>
                         
-                        <!-- Знаки препинания -->
                         <div class="schema-block" onclick="userAddBlock('comma')" title="Запятая"><div class="symbol-block">,</div></div>
                         <div class="schema-block" onclick="userAddBlock('dot')" title="Точка"><div class="symbol-block">.</div></div>
                         <div class="schema-block" onclick="userAddBlock('dash')" title="Тире"><div class="symbol-block">—</div></div>
@@ -382,7 +371,7 @@
             'sub-l': '<div class="symbol-block">(</div>',
             'sub-r': '<div class="symbol-block">)</div>',
             'subj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
-            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
+            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
             'obj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg>',
             'attr': '<svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
             'adv': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
@@ -485,7 +474,7 @@
             }
         }
 
-        /* Генерация чистого и безопасного кода без прямых закрывающих script тегов */
+        /* Генерация чистого, безопасного кода БЕЗ внешних зависимостей шрифтов */
         function generateEmbedCode() {
             const sentence = document.getElementById('sentenceInput').value.replace(/"/g, '&quot;');
             const cBg = document.getElementById('colBg').value;
@@ -496,10 +485,8 @@
             const cBlock = document.getElementById('colBlock').value;
             const size = document.getElementById('sizeBlock').value + 'px';
             const fSize = document.getElementById('fontSizeSel').value + 'px';
-            const font = document.getElementById('fontSel').value;
             const schemaStr = JSON.stringify(targetSchema);
 
-            // Безопасное разделение тегов для обхода парсеров Genially
             const sOpen = '<' + 'script>';
             const sClose = '<' + '/script>';
 
@@ -507,7 +494,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Comfortaa:wght@400;700&family=Rubik:wght@400;700&family=PT+Sans:wght@400;700&family=Roboto+Slab:wght@400;700&family=Caveat:wght@400;700&family=Orbitron:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { 
             --bg: ${cBg}; 
@@ -519,21 +506,19 @@
             --bsize: ${size}; 
             --fsize: ${fSize};
         }
-        /* Адаптивная безопасная растяжка для iframe Genially */
+        /* Безопасная верстка под Iframe Genially без использования 100vh */
         html, body { 
             width: 100%; 
-            min-height: 100%; 
-            height: auto; 
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
-            overflow-y: auto; 
+            background: var(--bg);
         }
         body { 
-            background: var(--bg); 
             color: var(--text); 
-            font-family: ${font}; 
-            padding: 12px; 
+            /* Красивый системный шрифт, не блокирующийся CSP */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            padding: 10px; 
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -542,19 +527,26 @@
             background: var(--card); 
             border: 2px solid var(--block); 
             border-radius: 12px; 
-            padding: 15px; 
-            padding-bottom: 55px; /* Space for buttons */
+            padding: 16px; 
             width: 100%; 
+            max-width: 580px;
             box-sizing: border-box; 
             display: flex; 
             flex-direction: column; 
-            justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6); 
-            min-height: calc(100vh - 24px); /* Ensure it takes full height of iframe minus body padding */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
+            min-height: 380px; /* Фиксированный минимум без бесконечного растягивания */
         }
-        .header { font-family: 'Orbitron', sans-serif; text-align: center; text-transform: uppercase; color: var(--btn2); margin-bottom: 10px; font-weight: bold; letter-spacing: 1px;}
-        .sentence { font-size: var(--fsize); text-align: center; margin-bottom: 20px; line-height: 1.4; font-weight: 500; }
-        .zone-title { font-size: 11px; color: #a39cb5; text-transform: uppercase; margin-bottom: 5px; text-align: center; font-weight: bold; }
+        .header { 
+            font-size: 14px;
+            text-align: center; 
+            text-transform: uppercase; 
+            color: var(--btn2); 
+            margin-bottom: 12px; 
+            font-weight: bold; 
+            letter-spacing: 1px;
+        }
+        .sentence { font-size: var(--fsize); text-align: center; margin-bottom: 18px; line-height: 1.4; font-weight: 500; }
+        .zone-title { font-size: 11px; opacity: 0.7; text-transform: uppercase; margin-bottom: 5px; text-align: center; font-weight: bold; }
         
         .palette, .ans-zone { 
             display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; 
@@ -589,9 +581,22 @@
         
         .btn-row { 
             display: flex; gap: 10px; 
-            margin-top: auto; /* Pushes the button row to the bottom in a flex column layout */
+            margin-top: 10px;
         }
-        .btn { flex: 1; background: linear-gradient(90deg, var(--btn1), var(--btn2)); border: none; color: white; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-family: inherit; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn { 
+            flex: 1; 
+            background: linear-gradient(90deg, var(--btn1), var(--btn2)); 
+            border: none; 
+            color: white; 
+            padding: 12px; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            font-family: inherit; 
+            font-size: 13px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+        }
         .btn-reset { background: #444; }
         .fb { text-align: center; font-weight: bold; min-height: 22px; margin: 10px 0; font-size: 15px; }
     </style>
@@ -605,13 +610,12 @@
             <div class="ans-zone" id="ans"></div>
             <div class="zone-title">Палитра блоков:</div>
             <div class="palette">
-                <!-- Убраны onclick, добавлены data-type для обработки в JS -->
                 <div class="block" data-type="main-l"><span class="t-sym">[</span></div>
                 <div class="block" data-type="main-r"><span class="t-sym">]</span></div>
                 <div class="block" data-type="sub-l"><span class="t-sym">(</span></div>
                 <div class="block" data-type="sub-r"><span class="t-sym">)</span></div>
                 <div class="block" data-type="subj"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
-                <div class="block" data-type="pred"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
+                <div class="block" data-type="pred"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
                 <div class="block" data-type="obj"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg></div>
                 <div class="block" data-type="attr"><svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
                 <div class="block" data-type="adv"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
@@ -627,19 +631,19 @@
             <div class="fb" id="fb"></div>
         </div>
         <div class="btn-row">
-            <!-- Добавлены id для обработки в JS -->
             <button class="btn btn-reset" id="resetBtn">Сбросить</button>
             <button class="btn" id="checkBtn">Проверить</button>
         </div>
     </div>
 
     ${sOpen}
+    (function() {
         const target = ${schemaStr}; 
         let user = [];
         const tpl = {
             'main-l': '<span class="t-sym">[</span>', 'main-r': '<span class="t-sym">]</span>', 'sub-l': '<span class="t-sym">(</span>', 'sub-r': '<span class="t-sym">)</span>',
             'subj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
-            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
+            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
             'obj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg>', 
             'attr': '<svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
             'adv': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
@@ -662,7 +666,7 @@
                 const e = document.createElement('div'); 
                 e.className = 'block'; 
                 e.innerHTML = tpl[t]; 
-                e.addEventListener('click', () => remove(i)); // Используем addEventListener для создаваемых блоков
+                e.addEventListener('click', () => remove(i));
                 ansZone.appendChild(e); 
             });
         }
@@ -674,20 +678,19 @@
             fbMessage.innerText = ok ? 'Верно! Отличная работа! 🏆' : 'Неверно, попробуйте снова. ❌';
         }
 
-        // Добавляем обработчики событий после полной загрузки DOM
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.palette .block').forEach(block => {
-                block.addEventListener('click', (event) => {
-                    const type = event.currentTarget.dataset.type; // Получаем тип блока из data-атрибута
-                    add(type);
-                });
+        // Мгновенная инициализация (Игнорируем нестабильный DOMContentLoaded)
+        document.querySelectorAll('.palette .block').forEach(block => {
+            block.addEventListener('click', (event) => {
+                const type = event.currentTarget.dataset.type;
+                add(type);
             });
-
-            document.getElementById('resetBtn').addEventListener('click', reset);
-            document.getElementById('checkBtn').addEventListener('click', check);
-
-            draw(); // Первоначальная отрисовка зоны ответа (будет пустой)
         });
+
+        document.getElementById('resetBtn').addEventListener('click', reset);
+        document.getElementById('checkBtn').addEventListener('click', check);
+
+        draw(); 
+    })();
     ${sClose}
 </body>
 </html>`;
@@ -697,7 +700,7 @@
 
         function copyGeneratedCode() {
             const copyText = document.getElementById('codeOutput');
-            copyText.style.display = 'block'; // Временное отображение для осуществления копирования
+            copyText.style.display = 'block';
             copyText.select();
             
             try {
@@ -711,7 +714,7 @@
                     btn.style.color = '#fff';
                 }, 2000);
             } catch (err) { alert('Не удалось скопировать.'); }
-            copyText.style.display = 'none'; // Снова скрываем от пользователя
+            copyText.style.display = 'none';
         }
     </script>
 </body>
