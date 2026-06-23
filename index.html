@@ -382,7 +382,7 @@
             'sub-l': '<div class="symbol-block">(</div>',
             'sub-r': '<div class="symbol-block">)</div>',
             'subj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
-            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
+            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
             'obj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg>',
             'attr': '<svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
             'adv': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
@@ -543,14 +543,14 @@
             border: 2px solid var(--block); 
             border-radius: 12px; 
             padding: 15px; 
-            padding-bottom: 55px; 
+            padding-bottom: 55px; /* Space for buttons */
             width: 100%; 
             box-sizing: border-box; 
             display: flex; 
             flex-direction: column; 
             justify-content: space-between;
             box-shadow: 0 4px 20px rgba(0,0,0,0.6); 
-            min-height: calc(100vh - 24px);
+            min-height: calc(100vh - 24px); /* Ensure it takes full height of iframe minus body padding */
         }
         .header { font-family: 'Orbitron', sans-serif; text-align: center; text-transform: uppercase; color: var(--btn2); margin-bottom: 10px; font-weight: bold; letter-spacing: 1px;}
         .sentence { font-size: var(--fsize); text-align: center; margin-bottom: 20px; line-height: 1.4; font-weight: 500; }
@@ -587,7 +587,10 @@
         .t-txt { font-weight: bold; color: var(--block); font-size: 13px; }
         .t-sym { font-size: 22px; font-weight: bold; color: var(--block); }
         
-        .btn-row { display: flex; gap: 10px; margin-top: 15px;}
+        .btn-row { 
+            display: flex; gap: 10px; 
+            margin-top: auto; /* Pushes the button row to the bottom in a flex column layout */
+        }
         .btn { flex: 1; background: linear-gradient(90deg, var(--btn1), var(--btn2)); border: none; color: white; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-family: inherit; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .btn-reset { background: #444; }
         .fb { text-align: center; font-weight: bold; min-height: 22px; margin: 10px 0; font-size: 15px; }
@@ -602,38 +605,41 @@
             <div class="ans-zone" id="ans"></div>
             <div class="zone-title">Палитра блоков:</div>
             <div class="palette">
-                <div class="block" onclick="add('main-l')"><span class="t-sym">[</span></div>
-                <div class="block" onclick="add('main-r')"><span class="t-sym">]</span></div>
-                <div class="block" onclick="add('sub-l')"><span class="t-sym">(</span></div>
-                <div class="block" onclick="add('sub-r')"><span class="t-sym">)</span></div>
-                <div class="block" onclick="add('subj')"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
-                <div class="block" onclick="add('pred')"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
-                <div class="block" onclick="add('obj')"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg></div>
-                <div class="block" onclick="add('attr')"><svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
-                <div class="block" onclick="add('adv')"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
-                <div class="block" onclick="add('homo')"><svg class="svg-icon" viewBox="0 0 40 40"><circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="3"/></svg></div>
-                <div class="block" onclick="add('part')"><span class="t-txt">/~~/</span></div>
-                <div class="block" onclick="add('ger')"><span class="t-txt">/._./</span></div>
-                <div class="block" onclick="add('comma')"><span class="t-sym">,</span></div>
-                <div class="block" onclick="add('dot')"><span class="t-sym">.</span></div>
-                <div class="block" onclick="add('dash')"><span class="t-sym">—</span></div>
-                <div class="block" onclick="add('colon')"><span class="t-sym">:</span></div>
-                <div class="block" onclick="add('semi')"><span class="t-sym">;</span></div>
+                <!-- Убраны onclick, добавлены data-type для обработки в JS -->
+                <div class="block" data-type="main-l"><span class="t-sym">[</span></div>
+                <div class="block" data-type="main-r"><span class="t-sym">]</span></div>
+                <div class="block" data-type="sub-l"><span class="t-sym">(</span></div>
+                <div class="block" data-type="sub-r"><span class="t-sym">)</span></div>
+                <div class="block" data-type="subj"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
+                <div class="block" data-type="pred"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
+                <div class="block" data-type="obj"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg></div>
+                <div class="block" data-type="attr"><svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
+                <div class="block" data-type="adv"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
+                <div class="block" data-type="homo"><svg class="svg-icon" viewBox="0 0 40 40"><circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="3"/></svg></div>
+                <div class="block" data-type="part"><span class="t-txt">/~~/</span></div>
+                <div class="block" data-type="ger"><span class="t-txt">/._./</span></div>
+                <div class="block" data-type="comma"><span class="t-sym">,</span></div>
+                <div class="block" data-type="dot"><span class="t-sym">.</span></div>
+                <div class="block" data-type="dash"><span class="t-sym">—</span></div>
+                <div class="block" data-type="colon"><span class="t-sym">:</span></div>
+                <div class="block" data-type="semi"><span class="t-sym">;</span></div>
             </div>
             <div class="fb" id="fb"></div>
         </div>
         <div class="btn-row">
-            <button class="btn btn-reset" onclick="reset()">Сбросить</button>
-            <button class="btn" onclick="check()">Проверить</button>
+            <!-- Добавлены id для обработки в JS -->
+            <button class="btn btn-reset" id="resetBtn">Сбросить</button>
+            <button class="btn" id="checkBtn">Проверить</button>
         </div>
     </div>
 
     ${sOpen}
-        const target = ${schemaStr}; let user = [];
+        const target = ${schemaStr}; 
+        let user = [];
         const tpl = {
             'main-l': '<span class="t-sym">[</span>', 'main-r': '<span class="t-sym">]</span>', 'sub-l': '<span class="t-sym">(</span>', 'sub-r': '<span class="t-sym">)</span>',
             'subj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
-            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
+            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
             'obj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg>', 
             'attr': '<svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
             'adv': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
@@ -642,20 +648,46 @@
             'ger': '<span class="t-txt">/._./</span>',
             'comma': '<span class="t-sym">,</span>', 'dot': '<span class="t-sym">.</span>', 'dash': '<span class="t-sym">—</span>', 'colon': '<span class="t-sym">:</span>', 'semi': '<span class="t-sym">;</span>'
         };
+
+        const ansZone = document.getElementById('ans');
+        const fbMessage = document.getElementById('fb');
+
         function add(t) { user.push(t); draw(); }
         function remove(i) { user.splice(i,1); draw(); }
-        function reset() { user = []; draw(); document.getElementById('fb').innerText=''; }
+        function reset() { user = []; draw(); fbMessage.innerText=''; }
+        
         function draw() {
-            const a = document.getElementById('ans'); a.innerHTML = '';
-            user.forEach((t, i) => { const e = document.createElement('div'); e.className = 'block'; e.innerHTML = tpl[t]; e.onclick = () => remove(i); a.appendChild(e); });
+            ansZone.innerHTML = '';
+            user.forEach((t, i) => { 
+                const e = document.createElement('div'); 
+                e.className = 'block'; 
+                e.innerHTML = tpl[t]; 
+                e.addEventListener('click', () => remove(i)); // Используем addEventListener для создаваемых блоков
+                ansZone.appendChild(e); 
+            });
         }
+        
         function check() {
-            const f = document.getElementById('fb');
-            if(!user.length) { f.style.color='#ff33a3'; f.innerText='Схема пуста!'; return; }
+            if(!user.length) { fbMessage.style.color='#ff33a3'; fbMessage.innerText='Схема пуста!'; return; }
             const ok = JSON.stringify(user) === JSON.stringify(target);
-            f.style.color = ok ? 'var(--btn2)' : '#ff33a3';
-            f.innerText = ok ? 'Верно! Отличная работа! 🏆' : 'Неверно, попробуйте снова. ❌';
+            fbMessage.style.color = ok ? 'var(--btn2)' : '#ff33a3';
+            fbMessage.innerText = ok ? 'Верно! Отличная работа! 🏆' : 'Неверно, попробуйте снова. ❌';
         }
+
+        // Добавляем обработчики событий после полной загрузки DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.palette .block').forEach(block => {
+                block.addEventListener('click', (event) => {
+                    const type = event.currentTarget.dataset.type; // Получаем тип блока из data-атрибута
+                    add(type);
+                });
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', reset);
+            document.getElementById('checkBtn').addEventListener('click', check);
+
+            draw(); // Первоначальная отрисовка зоны ответа (будет пустой)
+        });
     ${sClose}
 </body>
 </html>`;
