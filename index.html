@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор Схем Предложений - Редактор</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090615;
+            --bg-card: rgba(20, 15, 45, 0.7);
+            --accent-pink: #d000ff;
+            --accent-blue: #00f0ff;
+            --btn-gradient: linear-gradient(90deg, #8a2be2, #00f0ff);
+            --text-color: #ffffff;
+            --block-color: #00f0ff;
+            --block-size: 50px;
+            --font-size: 16px;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: radial-gradient(circle at top, #1e1035 0%, var(--bg-dark) 80%);
+            color: var(--text-color);
+            font-family: 'Rajdhani', 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2 {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--accent-blue);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #a39cb5;
+            margin-bottom: 25px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .editor-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            flex: 1;
+            min-width: 320px;
+            max-width: 550px;
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            border-bottom: 2px solid var(--accent-pink);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-size: 14px;
+            color: #a39cb5;
+            text-transform: uppercase;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--accent-blue);
+            border-radius: 6px;
+            color: white;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row > div {
+            flex: 1;
+        }
+
+        /* Настройки цвета */
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 100%;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: 1px solid var(--accent-blue);
+            border-radius: 6px;
+        }
+
+        /* Превью игры и сама игра */
+        .preview-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-screen {
+            background: #0d0826;
+            border: 2px dashed var(--accent-pink);
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sentence-display {
+            font-size: 20px;
+            text-align: center;
+            margin: 20px 0;
+            font-family: 'Roboto', sans-serif;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Отрисовка игровых блоков схемы */
+        .blocks-palette, .answer-zone {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            min-height: 60px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            align-items: center;
+        }
+
+        .answer-zone {
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .schema-block {
+            width: var(--block-size);
+            height: var(--block-size);
+            background: rgba(20, 15, 45, 0.9);
+            border: 2px solid var(--block-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .schema-block:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--block-color);
+        }
+
+        /* Стилизация символов блоков */
+        .line-subj { width: 70%; height: 2px; background: var(--block-color); }
+        .line-pred { width: 70%; height: 6px; border-top: 2px solid var(--block-color); border-bottom: 2px solid var(--block-color); }
+        .circle-homo { width: 20px; height: 20px; border: 2px solid var(--block-color); border-radius: 50%; }
+        .dashed-obj { width: 70%; border-bottom: 2px dashed var(--block-color); height: 1px; }
+        .participle { font-family: 'Roboto'; font-weight: bold; color: var(--block-color); } /* / ~~~ / */
+        .gerund { font-family: 'Roboto'; font-weight: bold; color: var(--block-color); } /* /_._/ */
+        .bracket-l, .bracket-r { font-family: 'Orbitron'; font-size: 24px; color: var(--block-color); font-weight: bold;}
+        .comma-block { font-family: 'Orbitron'; font-size: 24px; color: var(--block-color); font-weight: bold;}
+
+        /* Кнопки */
+        .btn {
+            background: var(--btn-gradient);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            transition: opacity 0.2s, transform 0.1s;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-copy {
+            background: linear-gradient(90deg, #d000ff, #8a2be2);
+        }
+
+        .feedback-msg {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 24px;
+            margin-top: 10px;
+        }
+
+        /* Вспомогательные элементы */
+        .block-legend {
+            font-size: 11px;
+            color: #8a81a3;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .output-box {
+            margin-top: 15px;
+        }
+
+        textarea.code-area {
+            height: 100px;
+            font-family: monospace;
+            font-size: 11px;
+            resize: none;
+            background: #05030a;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Sentence Schema Builder</h1>
+    <div class="subtitle">Редактор образовательных игр для Genially</div>
+
+    <div class="editor-container">
+        <!-- Панель управления (Редактор) -->
+        <div class="panel">
+            <div class="panel-title">Настройки игры</div>
+            
+            <label for="sentenceInput">Предложение для ученика:</label>
+            <textarea id="sentenceInput" rows="3">Мальчик, который читал интересную книгу, неожиданно улыбнулся.</textarea>
+
+            <label for="answerSequence">Правильная схема (выберите по очереди блоки):</label>
+            <div class="row">
+                <select id="blockSelector">
+                    <option value="main-l">[ (Главное нач.)</option>
+                    <option value="subj">━ (Подлежащее)</option>
+                    <option value="comma">, (Запятая)</option>
+                    <option value="sub-l">( (Придаточное нач.)</option>
+                    <option value="pred">╍ (Сказуемое)</option>
+                    <option value="obj">- - (Дополнение/Второстеп.)</option>
+                    <option value="sub-r">) (Придаточное кон.)</option>
+                    <option value="comma">, (Запятая)</option>
+                    <option value="pred">╍ (Сказуемое)</option>
+                    <option value="main-r">] (Главное кон.)</option>
+                    <option value="homo">◯ (Однородный)</option>
+                    <option value="part">/~~/ (Причастный)</option>
+                    <option value="ger">/._./ (Деепричастный)</option>
+                </select>
+                <button type="button" class="btn" style="margin-top:0; width:auto;" onclick="addBlockToAnswer()">Добавить</button>
+            </div>
+            
+            <div style="margin-top:10px;">
+                <strong>Текущая правильная схема:</strong>
+                <div id="targetSchemaDisplay" style="display:flex; gap:5px; margin-top:5px; flex-wrap:wrap;"></div>
+                <button type="button" class="btn" style="background:#551a8b; margin-top:5px; padding:5px 10px; font-size:11px;" onclick="clearTargetSchema()">Очистить схему</button>
+            </div>
+
+            <div class="row" style="margin-top:15px;">
+                <div>
+                    <label>Цвет блоков:</label>
+                    <input type="color" id="blockColorPicker" value="#00f0ff" onchange="updateStyles()">
+                </div>
+                <div>
+                    <label>Размер блоков (px):</label>
+                    <input type="text" id="blockSizeInput" value="50" oninput="updateStyles()">
+                </div>
+            </div>
+
+            <div class="row">
+                <div>
+                    <label>Шрифт заголовков:</label>
+                    <select id="fontSelector" onchange="updateStyles()">
+                        <option value="'Orbitron', sans-serif">Orbitron (Игровой)</option>
+                        <option value="'Rajdhani', sans-serif">Rajdhani (Фантастика)</option>
+                        <option value="'Roboto', sans-serif">Roboto (Классика)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Размер шрифта UI:</label>
+                    <input type="text" id="fontSizeInput" value="16" oninput="updateStyles()">
+                </div>
+            </div>
+
+            <div class="output-box">
+                <label>Готовый код для Genially:</label>
+                <textarea id="codeOutput" class="code-area" readonly></textarea>
+                <button class="btn btn-copy" id="copyBtn" onclick="copyGeneratedCode()">Скопировать код игры</button>
+            </div>
+        </div>
+
+        <!-- Панель предпросмотра (Preview) -->
+        <div class="panel preview-box">
+            <div class="panel-title" style="width:100%;">Предпросмотр игры</div>
+            <div class="subtitle" style="margin-bottom:10px;">Так игра будет выглядеть на слайде</div>
+            
+            <div class="game-screen" id="gameScreen">
+                <div class="sentence-display" id="previewSentence">Введенное предложение появится здесь...</div>
+                
+                <div>
+                    <div style="font-size:12px; color:#a39cb5; margin-bottom:5px; text-align:center;">ПОСТРОЙТЕ СХЕМУ ЗДЕСЬ (нажимайте на блоки внизу):</div>
+                    <div class="answer-zone" id="userAnswerZone">
+                        <!-- Сюда кликами будут добавляться блоки от пользователя -->
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size:12px; color:#a39cb5; margin-bottom:5px; text-align:center;">ДОСТУПНЫЕ БЛОКИ:</div>
+                    <div class="blocks-palette">
+                        <div class="schema-block" onclick="userAddBlock('main-l')"><div class="bracket-l">[</div></div>
+                        <div class="schema-block" onclick="userAddBlock('main-r')"><div class="bracket-r">]</div></div>
+                        <div class="schema-block" onclick="userAddBlock('sub-l')"><div class="bracket-l">(</div></div>
+                        <div class="schema-block" onclick="userAddBlock('sub-r')"><div class="bracket-r">)</div></div>
+                        <div class="schema-block" onclick="userAddBlock('subj')"><div class="line-subj"></div></div>
+                        <div class="schema-block" onclick="userAddBlock('pred')"><div class="line-pred"></div></div>
+                        <div class="schema-block" onclick="userAddBlock('homo')"><div class="circle-homo"></div></div>
+                        <div class="schema-block" onclick="userAddBlock('part')"><div class="participle">/~~/</div></div>
+                        <div class="schema-block" onclick="userAddBlock('ger')"><div class="gerund">/._./</div></div>
+                        <div class="schema-block" onclick="userAddBlock('obj')"><div class="dashed-obj"></div></div>
+                        <div class="schema-block" onclick="userAddBlock('comma')"><div class="comma-block">,</div></div>
+                    </div>
+                </div>
+
+                <div class="feedback-msg" id="feedbackMessage"></div>
+                
+                <div class="row">
+                    <button class="btn" style="background:#444;" onclick="clearUserAnswer()">Сбросить</button>
+                    <button class="btn" onclick="checkUserAnswer()">Проверить схему</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные текущей схемы
+        let targetSchema = ['main-l', 'subj', 'comma', 'sub-l', 'pred', 'obj', 'sub-r', 'comma', 'pred', 'main-r'];
+        let userSchema = [];
+
+        const blockTemplates = {
+            'main-l': '<div class="bracket-l">[</div>',
+            'main-r': '<div class="bracket-r">]</div>',
+            'sub-l': '<div class="bracket-l">(</div>',
+            'sub-r': '<div class="bracket-r">)</div>',
+            'subj': '<div class="line-subj"></div>',
+            'pred': '<div class="line-pred"></div>',
+            'homo': '<div class="circle-homo"></div>',
+            'part': '<div class="participle">/~~/</div>',
+            'ger': '<div class="gerund">/._./</div>',
+            'obj': '<div class="dashed-obj"></div>',
+            'comma': '<div class="comma-block">,</div>'
+        };
+
+        // Инициализация
+        window.onload = function() {
+            document.getElementById('sentenceInput').addEventListener('input', updatePreviewSentence);
+            updatePreviewSentence();
+            renderTargetSchema();
+            updateStyles();
+        };
+
+        function updatePreviewSentence() {
+            const text = document.getElementById('sentenceInput').value;
+            document.getElementById('previewSentence').innerText = text;
+            generateEmbedCode();
+        }
+
+        function addBlockToAnswer() {
+            const val = document.getElementById('blockSelector').value;
+            targetSchema.push(val);
+            renderTargetSchema();
+            generateEmbedCode();
+        }
+
+        function clearTargetSchema() {
+            targetSchema = [];
+            renderTargetSchema();
+            generateEmbedCode();
+        }
+
+        function renderTargetSchema() {
+            const container = document.getElementById('targetSchemaDisplay');
+            container.innerHTML = '';
+            targetSchema.forEach((type, index) => {
+                const el = document.createElement('div');
+                el.className = 'schema-block';
+                el.style.width = '35px';
+                el.style.height = '35px';
+                el.style.fontSize = '12px';
+                el.innerHTML = blockTemplates[type];
+                el.onclick = () => {
+                    targetSchema.splice(index, 1);
+                    renderTargetSchema();
+                    generateEmbedCode();
+                };
+                container.appendChild(el);
+            });
+        }
+
+        function updateStyles() {
+            const color = document.getElementById('blockColorPicker').value;
+            const size = document.getElementById('blockSizeInput').value + 'px';
+            const fontSize = document.getElementById('fontSizeInput').value + 'px';
+            const font = document.getElementById('fontSelector').value;
+
+            document.documentElement.style.setProperty('--block-color', color);
+            document.documentElement.style.setProperty('--block-size', size);
+            document.documentElement.style.setProperty('--font-size', fontSize);
+            document.body.style.fontFamily = font;
+
+            generateEmbedCode();
+        }
+
+        /* Логика игры в Превью */
+        function userAddBlock(type) {
+            userSchema.push(type);
+            renderUserAnswer();
+        }
+
+        function renderUserAnswer() {
+            const container = document.getElementById('userAnswerZone');
+            container.innerHTML = '';
+            userSchema.forEach((type, index) => {
+                const el = document.createElement('div');
+                el.className = 'schema-block';
+                el.innerHTML = blockTemplates[type];
+                el.onclick = () => {
+                    userSchema.splice(index, 1);
+                    renderUserAnswer();
+                };
+                container.appendChild(el);
+            });
+        }
+
+        function clearUserAnswer() {
+            userSchema = [];
+            renderUserAnswer();
+            document.getElementById('feedbackMessage').innerText = '';
+        }
+
+        function checkUserAnswer() {
+            const fb = document.getElementById('feedbackMessage');
+            if (userSchema.length === 0) {
+                fb.style.color = '#ff3333';
+                fb.innerText = 'Схема пуста! Составьте её из блоков.';
+                return;
+            }
+
+            const isCorrect = JSON.stringify(userSchema) === JSON.stringify(targetSchema);
+            if (isCorrect) {
+                fb.style.color = '#00f0ff';
+                fb.innerText = 'ОТЛИЧНО! Схема составлена верно! 🏆';
+            } else {
+                fb.style.color = '#ff33a3';
+                fb.innerText = 'Есть ошибка. Попробуйте еще раз! ❌';
+            }
+        }
+
+        /* Генерация финального автономного кода игры */
+        function generateEmbedCode() {
+            const sentence = document.getElementById('sentenceInput').value.replace(/"/g, '&quot;');
+            const color = document.getElementById('blockColorPicker').value;
+            const size = document.getElementById('blockSizeInput').value + 'px';
+            const fontSize = document.getElementById('fontSizeInput').value + 'px';
+            const font = document.getElementById('fontSelector').value;
+            const schemaStr = JSON.stringify(targetSchema);
+
+            const outputCode = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090615;
+            --accent-pink: #d000ff;
+            --accent-blue: #00f0ff;
+            --block-color: ${color};
+            --block-size: ${size};
+        }
+        body {
+            background: radial-gradient(circle at top, #1e1035 0%, var(--bg-dark) 80%);
+            color: #ffffff;
+            font-family: ${font};
+            font-size: ${fontSize};
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 95vh;
+            overflow: hidden;
+        }
+        .game-card {
+            background: rgba(20, 15, 45, 0.75);
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+        .header {
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-blue);
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-shadow: 0 0 8px var(--accent-blue);
+        }
+        .sentence {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.1em;
+            text-align: center;
+            margin: 15px 0;
+            line-height: 1.4;
+        }
+        .zone-title {
+            font-size: 11px;
+            color: #a39cb5;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .palette, .answer-zone {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            min-height: calc(var(--block-size) + 10px);
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .answer-zone {
+            border: 1px dashed var(--accent-blue);
+        }
+        .block {
+            width: var(--block-size);
+            height: var(--block-size);
+            background: rgba(20, 15, 45, 0.9);
+            border: 2px solid var(--block-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s;
+        }
+        .block:hover { transform: scale(1.05); }
+        .line-subj { width: 70%; height: 2px; background: var(--block-color); }
+        .line-pred { width: 70%; height: 6px; border-top: 2px solid var(--block-color); border-bottom: 2px solid var(--block-color); }
+        .circle-homo { width: 18px; height: 18px; border: 2px solid var(--block-color); border-radius: 50%; }
+        .dashed-obj { width: 70%; border-bottom: 2px dashed var(--block-color); height: 1px; }
+        .participle, .gerund, .bracket, .comma { font-weight: bold; color: var(--block-color); font-size: 1.2em; }
+        .btn-row { display: flex; gap: 10px; }
+        .btn {
+            flex: 1;
+            background: linear-gradient(90deg, #8a2be2, #00f0ff);
+            border: none;
+            color: white;
+            padding: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-reset { background: #333; }
+        .feedback {
+            text-align: center;
+            font-weight: bold;
+            min-height: 20px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-card">
+        <div class="header">Схема предложения</div>
+        <div class="sentence">"${sentence}"</div>
+        
+        <div class="zone-title">Составьте схему здесь (нажимайте для удаления):</div>
+        <div class="answer-zone" id="ans"></div>
+
+        <div class="zone-title">Кликните по элементу, чтобы добавить:</div>
+        <div class="palette">
+            <div class="block" onclick="add('main-l')"><span class="bracket">[</span></div>
+            <div class="block" onclick="add('main-r')"><span class="bracket">]</span></div>
+            <div class="block" onclick="add('sub-l')"><span class="bracket">(</span></div>
+            <div class="block" onclick="add('sub-r')"><span class="bracket">)</span></div>
+            <div class="block" onclick="add('subj')"><div class="line-subj"></div></div>
+            <div class="block" onclick="add('pred')"><div class="line-pred"></div></div>
+            <div class="block" onclick="add('homo')"><div class="circle-homo"></div></div>
+            <div class="block" onclick="add('part')"><span class="participle">/~~/</span></div>
+            <div class="block" onclick="add('ger')"><span class="gerund">/._./</span></div>
+            <div class="block" onclick="add('obj')"><div class="dashed-obj"></div></div>
+            <div class="block" onclick="add('comma')"><span class="comma">,</span></div>
+        </div>
+
+        <div class="feedback" id="fb"></div>
+
+        <div class="btn-row">
+            <button class="btn btn-reset" onclick="reset()">Сбросить</button>
+            <button class="btn" onclick="check()">Проверить</button>
+        </div>
+    </div>
+
+    <script>
+        const target = ${schemaStr};
+        let user = [];
+        const temps = {
+            'main-l': '<span class="bracket">[</span>', 'main-r': '<span class="bracket">]</span>',
+            'sub-l': '<span class="bracket">(</span>', 'sub-r': '<span class="bracket">)</span>',
+            'subj': '<div class="line-subj"></div>', 'pred': '<div class="line-pred"></div>',
+            'homo': '<div class="circle-homo"></div>', 'part': '<span class="participle">/~~/</span>',
+            'ger': '<span class="gerund">/._./</span>', 'obj': '<div class="dashed-obj"></div>',
+            'comma': '<span class="comma">,</span>'
+        };
+
+        function add(t) { user.push(t); draw(); }
+        function remove(i) { user.splice(i,1); draw(); }
+        function reset() { user = []; draw(); document.getElementById('fb').innerText=''; }
+        function draw() {
+            const a = document.getElementById('ans');
+            a.innerHTML = '';
+            user.forEach((t, i) => {
+                const e = document.createElement('div');
+                e.className = 'block';
+                e.innerHTML = temps[t];
+                e.onclick = () => remove(i);
+                a.appendChild(e);
+            });
+        }
+        function check() {
+            const f = document.getElementById('fb');
+            if(!user.length) { f.style.color='#ff33a3'; f.innerText='Схема пуста!'; return; }
+            const ok = JSON.stringify(user) === JSON.stringify(target);
+            f.style.color = ok ? '#00f0ff' : '#ff33a3';
+            f.innerText = ok ? 'Верно! Отличная работа! 🏆' : 'Неверно, попробуйте снова. ❌';
+        }
+    </script>
+</body>
+</html>`;
+
+            document.getElementById('codeOutput').value = outputCode;
+        }
+
+        function copyGeneratedCode() {
+            const copyText = document.getElementById('codeOutput');
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+
+            const btn = document.getElementById('copyBtn');
+            btn.innerText = 'Скопировано!';
+            btn.style.background = 'linear-gradient(90deg, #00f0ff, #00ff66)';
+            
+            setTimeout(() => {
+                btn.innerText = 'Скопировать код игры';
+                btn.style.background = 'linear-gradient(90deg, #d000ff, #8a2be2)';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
