@@ -509,22 +509,22 @@
             display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; 
             padding: 10px; background: rgba(0, 0, 0, 0.4); border-radius: 8px; align-items: center; margin-bottom: 10px;
         }
-        .ans-zone { border: 1px dashed var(--block); min-height: calc(var(--bsize) + 10px); }
+        .ans-zone { border: 2px dashed var(--block); min-height: calc(var(--bsize) + 15px); }
         .block { 
             width: var(--bsize); height: var(--bsize); background: rgba(0,0,0,0.6); border: 2px solid var(--block); border-radius: 6px; 
             display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; transition: transform 0.1s; 
         }
         .block:hover { transform: scale(1.05); }
         
-        /* Стили символов внутри игры */
-        .l-sub { width: 70%; height: 2px; background: var(--block); }
-        .l-prd { width: 70%; height: 6px; border-top: 2px solid var(--block); border-bottom: 2px solid var(--block); }
-        .l-obj { width: 70%; border-bottom: 2px dashed var(--block); height: 1px; }
-        .l-atr { text-decoration: underline wavy var(--block) 2px; text-underline-offset: 4px; color: transparent; width: 60%; font-size: 10px; }
-        .l-adv { font-family: monospace; font-weight: bold; color: var(--block); font-size: 14px; letter-spacing: 2px; }
-        .c-hom { width: 18px; height: 18px; border: 2px solid var(--block); border-radius: 50%; }
-        .t-txt { font-weight: bold; color: var(--block); font-size: 14px; }
-        .t-sym { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: bold; color: var(--block); }
+        /* Стили символов внутри игры (с защитой от схлопывания во Flexbox) */
+        .l-sub { width: 70%; height: 3px; background: var(--block); flex-shrink: 0; }
+        .l-prd { width: 70%; height: 8px; border-top: 3px solid var(--block); border-bottom: 3px solid var(--block); flex-shrink: 0; }
+        .l-obj { width: 70%; height: 3px; border-bottom: 3px dashed var(--block); flex-shrink: 0; }
+        .l-atr { width: 70%; height: 8px; background-image: radial-gradient(circle at 50% 100%, transparent 2px, var(--block) 2px, var(--block) 4px, transparent 4px); background-size: 6px 8px; background-repeat: repeat-x; flex-shrink: 0; }
+        .l-adv { font-family: monospace; font-weight: bold; color: var(--block); font-size: 14px; letter-spacing: 2px; flex-shrink: 0; }
+        .c-hom { width: 18px; height: 18px; border: 2px solid var(--block); border-radius: 50%; flex-shrink: 0; }
+        .t-txt { font-weight: bold; color: var(--block); font-size: 14px; flex-shrink: 0; }
+        .t-sym { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: bold; color: var(--block); flex-shrink: 0; }
         
         /* Оптимизированный контейнер кнопок */
         .btn-row { 
@@ -594,8 +594,10 @@
     </div>
 
     <script>
-        const target = ${schemaStr}; let user = [];
-        const tpl = {
+        // Использование var вместо const/let исключает фатальные ошибки повторного объявления внутри контейнеров Genially
+        var target = ${schemaStr}; 
+        var user = [];
+        var tpl = {
             'main-l': '<span class="t-sym">[</span>', 'main-r': '<span class="t-sym">]</span>', 'sub-l': '<span class="t-sym">(</span>', 'sub-r': '<span class="t-sym">)</span>',
             'subj': '<div class="l-sub"></div>', 'pred': '<div class="l-prd"></div>', 'obj': '<div class="l-obj"></div>', 'attr': '<div class="l-atr">&nbsp;</div>', 'adv': '<div class="l-adv">_._</div>',
             'homo': '<div class="c-hom"></div>', 'part': '<span class="t-txt">/~~/</span>', 'ger': '<span class="t-txt">/._./</span>',
@@ -605,13 +607,19 @@
         function remove(i) { user.splice(i,1); draw(); }
         function reset() { user = []; draw(); document.getElementById('fb').innerText=''; }
         function draw() {
-            const a = document.getElementById('ans'); a.innerHTML = '';
-            user.forEach((t, i) => { const e = document.createElement('div'); e.className = 'block'; e.innerHTML = tpl[t]; e.onclick = () => remove(i); a.appendChild(e); });
+            var a = document.getElementById('ans'); a.innerHTML = '';
+            user.forEach(function(t, i) { 
+                var e = document.createElement('div'); 
+                e.className = 'block'; 
+                e.innerHTML = tpl[t]; 
+                e.onclick = function() { remove(i); }; 
+                a.appendChild(e); 
+            });
         }
         function check() {
-            const f = document.getElementById('fb');
+            var f = document.getElementById('fb');
             if(!user.length) { f.style.color='#ff33a3'; f.innerText='Схема пуста!'; return; }
-            const ok = JSON.stringify(user) === JSON.stringify(target);
+            var ok = JSON.stringify(user) === JSON.stringify(target);
             f.style.color = ok ? 'var(--btn2)' : '#ff33a3';
             f.innerText = ok ? 'Верно! Отличная работа! 🏆' : 'Неверно, попробуйте снова. ❌';
         }
