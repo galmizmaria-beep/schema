@@ -376,7 +376,6 @@
         let targetSchema = ['ger', 'comma', 'attr', 'subj', 'adv', 'pred', 'adv', 'dot'];
         let userSchema = [];
 
-        // Векторные HTML-шаблоны для всех блоков
         const blockTemplates = {
             'main-l': '<div class="symbol-block">[</div>',
             'main-r': '<div class="symbol-block">]</div>',
@@ -437,7 +436,6 @@
             });
         }
 
-        // Локальное обновление дизайна только для контейнера превью
         function updateStyles() {
             const gs = document.getElementById('gameScreen');
             
@@ -487,7 +485,7 @@
             }
         }
 
-        /* Генерация кода для Genially (с полной поддержкой SVG и безопасным отступом от водяного знака) */
+        /* Генерация чистого и безопасного кода без прямых закрывающих script тегов */
         function generateEmbedCode() {
             const sentence = document.getElementById('sentenceInput').value.replace(/"/g, '&quot;');
             const cBg = document.getElementById('colBg').value;
@@ -500,6 +498,10 @@
             const fSize = document.getElementById('fontSizeSel').value + 'px';
             const font = document.getElementById('fontSel').value;
             const schemaStr = JSON.stringify(targetSchema);
+
+            // Безопасное разделение тегов для обхода парсеров Genially
+            const sOpen = '<' + 'script>';
+            const sClose = '<' + '/script>';
 
             const outputCode = `<!DOCTYPE html>
 <html>
@@ -541,7 +543,6 @@
             border: 2px solid var(--block); 
             border-radius: 12px; 
             padding: 15px; 
-            /* Нижний отступ предотвращает наложение водяного знака Genially */
             padding-bottom: 55px; 
             width: 100%; 
             box-sizing: border-box; 
@@ -578,7 +579,6 @@
         }
         .block:hover { transform: scale(1.05); }
         
-        /* Векторные иконки блоков */
         .svg-icon {
             width: 75%;
             height: 75%;
@@ -628,7 +628,7 @@
         </div>
     </div>
 
-    <script>
+    ${sOpen}
         const target = ${schemaStr}; let user = [];
         const tpl = {
             'main-l': '<span class="t-sym">[</span>', 'main-r': '<span class="t-sym">]</span>', 'sub-l': '<span class="t-sym">(</span>', 'sub-r': '<span class="t-sym">)</span>',
@@ -656,7 +656,7 @@
             f.style.color = ok ? 'var(--btn2)' : '#ff33a3';
             f.innerText = ok ? 'Верно! Отличная работа! 🏆' : 'Неверно, попробуйте снова. ❌';
         }
-    <\/script>
+    ${sClose}
 </body>
 </html>`;
 
