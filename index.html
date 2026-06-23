@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конструктор Схем Предложений - Редактор</title>
+    <title>Конструктор Схем - Игровой Редактор</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -107,7 +107,6 @@
             flex: 1;
         }
 
-        /* Настройки цвета */
         input[type="color"] {
             -webkit-appearance: none;
             border: none;
@@ -126,7 +125,6 @@
             border-radius: 6px;
         }
 
-        /* Превью игры и сама игра */
         .preview-box {
             display: flex;
             flex-direction: column;
@@ -154,7 +152,6 @@
             text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
 
-        /* Отрисовка игровых блоков схемы */
         .blocks-palette, .answer-zone {
             display: flex;
             gap: 10px;
@@ -193,17 +190,15 @@
             box-shadow: 0 0 15px var(--block-color);
         }
 
-        /* Стилизация символов блоков */
         .line-subj { width: 70%; height: 2px; background: var(--block-color); }
         .line-pred { width: 70%; height: 6px; border-top: 2px solid var(--block-color); border-bottom: 2px solid var(--block-color); }
         .circle-homo { width: 20px; height: 20px; border: 2px solid var(--block-color); border-radius: 50%; }
         .dashed-obj { width: 70%; border-bottom: 2px dashed var(--block-color); height: 1px; }
-        .participle { font-family: 'Roboto'; font-weight: bold; color: var(--block-color); } /* / ~~~ / */
-        .gerund { font-family: 'Roboto'; font-weight: bold; color: var(--block-color); } /* /_._/ */
+        .participle { font-family: 'Roboto'; font-weight: bold; color: var(--block-color); } 
+        .gerund { font-family: 'Roboto'; font-weight: bold; color: var(--block-color); } 
         .bracket-l, .bracket-r { font-family: 'Orbitron'; font-size: 24px; color: var(--block-color); font-weight: bold;}
         .comma-block { font-family: 'Orbitron'; font-size: 24px; color: var(--block-color); font-weight: bold;}
 
-        /* Кнопки */
         .btn {
             background: var(--btn-gradient);
             border: none;
@@ -220,17 +215,9 @@
             margin-top: 15px;
         }
 
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-copy {
-            background: linear-gradient(90deg, #d000ff, #8a2be2);
-        }
+        .btn:hover { opacity: 0.9; }
+        .btn:active { transform: scale(0.98); }
+        .btn-copy { background: linear-gradient(90deg, #d000ff, #8a2be2); }
 
         .feedback-msg {
             text-align: center;
@@ -240,17 +227,7 @@
             margin-top: 10px;
         }
 
-        /* Вспомогательные элементы */
-        .block-legend {
-            font-size: 11px;
-            color: #8a81a3;
-            text-align: center;
-            margin-top: 5px;
-        }
-
-        .output-box {
-            margin-top: 15px;
-        }
+        .output-box { margin-top: 15px; }
 
         textarea.code-area {
             height: 100px;
@@ -274,7 +251,7 @@
             <label for="sentenceInput">Предложение для ученика:</label>
             <textarea id="sentenceInput" rows="3">Мальчик, который читал интересную книгу, неожиданно улыбнулся.</textarea>
 
-            <label for="answerSequence">Правильная схема (выберите по очереди блоки):</label>
+            <label>Правильная схема (выберите по очереди блоки):</label>
             <div class="row">
                 <select id="blockSelector">
                     <option value="main-l">[ (Главное нач.)</option>
@@ -284,7 +261,6 @@
                     <option value="pred">╍ (Сказуемое)</option>
                     <option value="obj">- - (Дополнение/Второстеп.)</option>
                     <option value="sub-r">) (Придаточное кон.)</option>
-                    <option value="comma">, (Запятая)</option>
                     <option value="pred">╍ (Сказуемое)</option>
                     <option value="main-r">] (Главное кон.)</option>
                     <option value="homo">◯ (Однородный)</option>
@@ -329,7 +305,7 @@
             <div class="output-box">
                 <label>Готовый код для Genially:</label>
                 <textarea id="codeOutput" class="code-area" readonly></textarea>
-                <button class="btn btn-copy" id="copyBtn" onclick="copyGeneratedCode()">Скопировать код игры</button>
+                <button type="button" class="btn btn-copy" id="copyBtn" onclick="copyGeneratedCode()">Скопировать код игры</button>
             </div>
         </div>
 
@@ -343,9 +319,7 @@
                 
                 <div>
                     <div style="font-size:12px; color:#a39cb5; margin-bottom:5px; text-align:center;">ПОСТРОЙТЕ СХЕМУ ЗДЕСЬ (нажимайте на блоки внизу):</div>
-                    <div class="answer-zone" id="userAnswerZone">
-                        <!-- Сюда кликами будут добавляться блоки от пользователя -->
-                    </div>
+                    <div class="answer-zone" id="userAnswerZone"></div>
                 </div>
 
                 <div>
@@ -394,7 +368,6 @@
             'comma': '<div class="comma-block">,</div>'
         };
 
-        // Инициализация
         window.onload = function() {
             document.getElementById('sentenceInput').addEventListener('input', updatePreviewSentence);
             updatePreviewSentence();
@@ -508,94 +481,26 @@
             const font = document.getElementById('fontSelector').value;
             const schemaStr = JSON.stringify(targetSchema);
 
+            /* ВНИМАНИЕ: Тег скрипта ниже экранирован как <\/script>, чтобы не ломать основной код! */
             const outputCode = `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #090615;
-            --accent-pink: #d000ff;
-            --accent-blue: #00f0ff;
-            --block-color: ${color};
-            --block-size: ${size};
-        }
+        :root { --bg-dark: #090615; --accent-blue: #00f0ff; --block-color: ${color}; --block-size: ${size}; }
         body {
-            background: radial-gradient(circle at top, #1e1035 0%, var(--bg-dark) 80%);
-            color: #ffffff;
-            font-family: ${font};
-            font-size: ${fontSize};
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 95vh;
-            overflow: hidden;
+            background: radial-gradient(circle at top, #1e1035 0%, var(--bg-dark) 80%); color: #ffffff;
+            font-family: ${font}; font-size: ${fontSize}; margin: 0; padding: 15px;
+            display: flex; justify-content: center; align-items: center; min-height: 95vh; overflow: hidden;
         }
-        .game-card {
-            background: rgba(20, 15, 45, 0.75);
-            border: 2px solid rgba(0, 240, 255, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            width: 100%;
-            max-width: 600px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            box-sizing: border-box;
-        }
-        .header {
-            font-family: 'Orbitron', sans-serif;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent-blue);
-            margin-bottom: 15px;
-            font-size: 18px;
-            text-shadow: 0 0 8px var(--accent-blue);
-        }
-        .sentence {
-            font-family: 'Roboto', sans-serif;
-            font-size: 1.1em;
-            text-align: center;
-            margin: 15px 0;
-            line-height: 1.4;
-        }
-        .zone-title {
-            font-size: 11px;
-            color: #a39cb5;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            text-align: center;
-        }
-        .palette, .answer-zone {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            flex-wrap: wrap;
-            min-height: calc(var(--block-size) + 10px);
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 8px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .answer-zone {
-            border: 1px dashed var(--accent-blue);
-        }
-        .block {
-            width: var(--block-size);
-            height: var(--block-size);
-            background: rgba(20, 15, 45, 0.9);
-            border: 2px solid var(--block-color);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.1s;
-        }
+        .game-card { background: rgba(20, 15, 45, 0.75); border: 2px solid rgba(0, 240, 255, 0.3); border-radius: 12px; padding: 20px; width: 100%; max-width: 600px; box-shadow: 0 0 20px rgba(0,0,0,0.5); box-sizing: border-box; }
+        .header { font-family: 'Orbitron', sans-serif; text-align: center; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-blue); margin-bottom: 15px; font-size: 18px; text-shadow: 0 0 8px var(--accent-blue); }
+        .sentence { font-family: 'Roboto', sans-serif; font-size: 1.1em; text-align: center; margin: 15px 0; line-height: 1.4; }
+        .zone-title { font-size: 11px; color: #a39cb5; text-transform: uppercase; margin-bottom: 5px; text-align: center; }
+        .palette, .answer-zone { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; min-height: calc(var(--block-size) + 10px); padding: 10px; background: rgba(0, 0, 0, 0.4); border-radius: 8px; align-items: center; margin-bottom: 15px; }
+        .answer-zone { border: 1px dashed var(--accent-blue); }
+        .block { width: var(--block-size); height: var(--block-size); background: rgba(20, 15, 45, 0.9); border: 2px solid var(--block-color); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; transition: transform 0.1s; }
         .block:hover { transform: scale(1.05); }
         .line-subj { width: 70%; height: 2px; background: var(--block-color); }
         .line-pred { width: 70%; height: 6px; border-top: 2px solid var(--block-color); border-bottom: 2px solid var(--block-color); }
@@ -603,37 +508,17 @@
         .dashed-obj { width: 70%; border-bottom: 2px dashed var(--block-color); height: 1px; }
         .participle, .gerund, .bracket, .comma { font-weight: bold; color: var(--block-color); font-size: 1.2em; }
         .btn-row { display: flex; gap: 10px; }
-        .btn {
-            flex: 1;
-            background: linear-gradient(90deg, #8a2be2, #00f0ff);
-            border: none;
-            color: white;
-            padding: 10px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .btn { flex: 1; background: linear-gradient(90deg, #8a2be2, #00f0ff); border: none; color: white; padding: 10px; font-family: 'Orbitron', sans-serif; font-size: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .btn-reset { background: #333; }
-        .feedback {
-            text-align: center;
-            font-weight: bold;
-            min-height: 20px;
-            margin-top: 10px;
-            font-size: 14px;
-        }
+        .feedback { text-align: center; font-weight: bold; min-height: 20px; margin-top: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
     <div class="game-card">
         <div class="header">Схема предложения</div>
         <div class="sentence">"${sentence}"</div>
-        
         <div class="zone-title">Составьте схему здесь (нажимайте для удаления):</div>
         <div class="answer-zone" id="ans"></div>
-
         <div class="zone-title">Кликните по элементу, чтобы добавить:</div>
         <div class="palette">
             <div class="block" onclick="add('main-l')"><span class="bracket">[</span></div>
@@ -648,9 +533,7 @@
             <div class="block" onclick="add('obj')"><div class="dashed-obj"></div></div>
             <div class="block" onclick="add('comma')"><span class="comma">,</span></div>
         </div>
-
         <div class="feedback" id="fb"></div>
-
         <div class="btn-row">
             <button class="btn btn-reset" onclick="reset()">Сбросить</button>
             <button class="btn" onclick="check()">Проверить</button>
@@ -661,27 +544,16 @@
         const target = ${schemaStr};
         let user = [];
         const temps = {
-            'main-l': '<span class="bracket">[</span>', 'main-r': '<span class="bracket">]</span>',
-            'sub-l': '<span class="bracket">(</span>', 'sub-r': '<span class="bracket">)</span>',
-            'subj': '<div class="line-subj"></div>', 'pred': '<div class="line-pred"></div>',
-            'homo': '<div class="circle-homo"></div>', 'part': '<span class="participle">/~~/</span>',
-            'ger': '<span class="gerund">/._./</span>', 'obj': '<div class="dashed-obj"></div>',
-            'comma': '<span class="comma">,</span>'
+            'main-l': '<span class="bracket">[</span>', 'main-r': '<span class="bracket">]</span>', 'sub-l': '<span class="bracket">(</span>', 'sub-r': '<span class="bracket">)</span>',
+            'subj': '<div class="line-subj"></div>', 'pred': '<div class="line-pred"></div>', 'homo': '<div class="circle-homo"></div>', 'part': '<span class="participle">/~~/</span>',
+            'ger': '<span class="gerund">/._./</span>', 'obj': '<div class="dashed-obj"></div>', 'comma': '<span class="comma">,</span>'
         };
-
         function add(t) { user.push(t); draw(); }
         function remove(i) { user.splice(i,1); draw(); }
         function reset() { user = []; draw(); document.getElementById('fb').innerText=''; }
         function draw() {
-            const a = document.getElementById('ans');
-            a.innerHTML = '';
-            user.forEach((t, i) => {
-                const e = document.createElement('div');
-                e.className = 'block';
-                e.innerHTML = temps[t];
-                e.onclick = () => remove(i);
-                a.appendChild(e);
-            });
+            const a = document.getElementById('ans'); a.innerHTML = '';
+            user.forEach((t, i) => { const e = document.createElement('div'); e.className = 'block'; e.innerHTML = temps[t]; e.onclick = () => remove(i); a.appendChild(e); });
         }
         function check() {
             const f = document.getElementById('fb');
@@ -690,7 +562,7 @@
             f.style.color = ok ? '#00f0ff' : '#ff33a3';
             f.innerText = ok ? 'Верно! Отличная работа! 🏆' : 'Неверно, попробуйте снова. ❌';
         }
-    </script>
+    <\/script>
 </body>
 </html>`;
 
@@ -701,16 +573,26 @@
             const copyText = document.getElementById('codeOutput');
             copyText.select();
             copyText.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(copyText.value);
-
-            const btn = document.getElementById('copyBtn');
-            btn.innerText = 'Скопировано!';
-            btn.style.background = 'linear-gradient(90deg, #00f0ff, #00ff66)';
             
-            setTimeout(() => {
-                btn.innerText = 'Скопировать код игры';
-                btn.style.background = 'linear-gradient(90deg, #d000ff, #8a2be2)';
-            }, 2000);
+            // Универсальный метод копирования (работает и из локальных файлов)
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(copyText.value);
+                } else {
+                    document.execCommand('copy');
+                }
+                
+                const btn = document.getElementById('copyBtn');
+                btn.innerText = 'Скопировано!';
+                btn.style.background = 'linear-gradient(90deg, #00f0ff, #00ff66)';
+                
+                setTimeout(() => {
+                    btn.innerText = 'Скопировать код игры';
+                    btn.style.background = 'linear-gradient(90deg, #d000ff, #8a2be2)';
+                }, 2000);
+            } catch (err) {
+                alert('Не удалось скопировать текст. Нажмите Ctrl+C вручную.');
+            }
         }
     </script>
 </body>
