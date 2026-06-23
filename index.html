@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Конструктор Схем - PRO Редактор</title>
-    <!-- Подключаем шрифты для интерфейса Редактора -->
+    <!-- Подключаем шрифты с поддержкой кириллицы (для самого редактора) -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Comfortaa:wght@400;700&family=Rubik:wght@400;700&family=PT+Sans:wght@400;700&family=Roboto+Slab:wght@400;700&family=Caveat:wght@400;700&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Фиксированные стили для самого Редактора */
+        /* Фиксированные стили для самого Редактора (не меняются пользователем) */
         body {
             margin: 0;
             padding: 20px;
@@ -19,7 +19,6 @@
             align-items: center;
             min-height: 100vh;
             overflow-x: hidden;
-            box-sizing: border-box;
         }
 
         h1 {
@@ -74,7 +73,6 @@
         .row { display: flex; gap: 10px; }
         .row > div { flex: 1; }
 
-        /* Настройки цвета в панели */
         .color-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -153,12 +151,7 @@
         }
         .schema-block:hover { transform: scale(1.08); box-shadow: 0 0 10px var(--g-block-color); }
 
-        .svg-icon {
-            width: 75%;
-            height: 75%;
-            display: block;
-        }
-        
+        .svg-icon { width: 75%; height: 75%; display: block; }
         .participle, .gerund { font-weight: bold; font-size: 13px; } 
         .symbol-block { font-size: 22px; font-weight: bold; }
 
@@ -170,10 +163,7 @@
         .btn:active { transform: scale(0.98); }
         .btn-reset { background: #444; box-shadow: none; }
 
-        .game-screen .btn {
-            background: linear-gradient(90deg, var(--g-btn-color1), var(--g-btn-color2));
-        }
-
+        .game-screen .btn { background: linear-gradient(90deg, var(--g-btn-color1), var(--g-btn-color2)); }
         .feedback-msg { text-align: center; font-size: 16px; font-weight: bold; min-height: 22px; margin: 10px 0; }
         .output-box { margin-top: 15px; }
     </style>
@@ -224,7 +214,7 @@
             </div>
             
             <div style="margin-top:10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
-                <span style="font-size: 12px; color: #a39cb5;">ПРАВИЛЬНАЯ СХЕМА (кликните для удаления):</span>
+                <span style="font-size: 12px; color: #a39cb5;">ПРАВИЛЬНАЯ СХЕМА (кликните по блоку, чтобы удалить):</span>
                 <div id="targetSchemaDisplay" style="display:flex; gap:5px; margin-top:10px; flex-wrap:wrap; min-height: 35px;"></div>
                 <button type="button" class="btn" style="background:#551a8b; margin-top:10px; padding:5px 10px; font-size:11px;" onclick="clearTargetSchema()">Очистить схему</button>
             </div>
@@ -277,17 +267,16 @@
                 </div>
             </div>
 
-            <!-- Шрифт в интерфейсе редактора -->
             <div class="row" style="margin-top: 10px;">
                 <div>
-                    <label>Шрифт интерфейса (редактор):</label>
+                    <label>Шрифт игры (кириллица):</label>
                     <select id="fontSel" onchange="updateStyles()">
                         <option value="'Montserrat', sans-serif">Montserrat</option>
                         <option value="'Comfortaa', sans-serif">Comfortaa (Круглый)</option>
                         <option value="'Rubik', sans-serif">Rubik</option>
                         <option value="'PT Sans', sans-serif">PT Sans</option>
                         <option value="'Roboto Slab', serif">Roboto Slab</option>
-                        <option value="'Caveat', cursive">Caveat</option>
+                        <option value="'Caveat', cursive">Caveat (Рукописный)</option>
                         <option value="'Roboto', sans-serif">Roboto</option>
                         <option value="'Orbitron', sans-serif">Orbitron (Sci-Fi)</option>
                     </select>
@@ -320,7 +309,6 @@
                         <div class="schema-block" onclick="userAddBlock('main-r')" title="Главное кон."><div class="symbol-block">]</div></div>
                         <div class="schema-block" onclick="userAddBlock('sub-l')" title="Придаточное нач."><div class="symbol-block">(</div></div>
                         <div class="schema-block" onclick="userAddBlock('sub-r')" title="Придаточное кон."><div class="symbol-block">)</div></div>
-                        
                         <div class="schema-block" onclick="userAddBlock('subj')" title="Подлежащее">
                             <svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
                         </div>
@@ -336,13 +324,11 @@
                         <div class="schema-block" onclick="userAddBlock('adv')" title="Обстоятельство">
                             <svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
                         </div>
-                        
                         <div class="schema-block" onclick="userAddBlock('homo')" title="Однородный член">
                             <svg class="svg-icon" viewBox="0 0 40 40"><circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="3"/></svg>
                         </div>
                         <div class="schema-block" onclick="userAddBlock('part')" title="Причастный оборот"><div class="participle">/~~/</div></div>
                         <div class="schema-block" onclick="userAddBlock('ger')" title="Деепричастный оборот"><div class="gerund">/._./</div></div>
-                        
                         <div class="schema-block" onclick="userAddBlock('comma')" title="Запятая"><div class="symbol-block">,</div></div>
                         <div class="schema-block" onclick="userAddBlock('dot')" title="Точка"><div class="symbol-block">.</div></div>
                         <div class="schema-block" onclick="userAddBlock('dash')" title="Тире"><div class="symbol-block">—</div></div>
@@ -432,7 +418,7 @@
             gs.style.setProperty('--g-btn-color1', document.getElementById('colBtn1').value);
             gs.style.setProperty('--g-btn-color2', document.getElementById('colBtn2').value);
             gs.style.setProperty('--g-text-color', document.getElementById('colText').value);
-            gs.style.setProperty('--g-block-color', document.getElementById('colBlock').value);
+            gs.setProperty('--g-block-color', document.getElementById('colBlock').value);
             gs.style.setProperty('--g-block-size', document.getElementById('sizeBlock').value + 'px');
             gs.style.setProperty('--g-font-size', document.getElementById('fontSizeSel').value + 'px');
             gs.style.fontFamily = document.getElementById('fontSel').value;
@@ -474,7 +460,7 @@
             }
         }
 
-        /* Генерация чистого, безопасного кода БЕЗ внешних зависимостей шрифтов */
+        // === ИСПРАВЛЕННАЯ ФУНКЦИЯ ГЕНЕРАЦИИ КОДА ===
         function generateEmbedCode() {
             const sentence = document.getElementById('sentenceInput').value.replace(/"/g, '&quot;');
             const cBg = document.getElementById('colBg').value;
@@ -485,6 +471,7 @@
             const cBlock = document.getElementById('colBlock').value;
             const size = document.getElementById('sizeBlock').value + 'px';
             const fSize = document.getElementById('fontSizeSel').value + 'px';
+            const font = document.getElementById('fontSel').value;
             const schemaStr = JSON.stringify(targetSchema);
 
             const sOpen = '<' + 'script>';
@@ -494,7 +481,11 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 
+      РЕШЕНИЕ ПРОБЛЕМЫ С ШРИФТАМИ:
+      Внешние шрифты (Google Fonts) удалены, так как они блокируются политикой безопасности Genially (CSP). 
+      Будут использованы системные или уже загруженные на странице шрифты.
+    -->
     <style>
         :root { 
             --bg: ${cBg}; 
@@ -506,19 +497,23 @@
             --bsize: ${size}; 
             --fsize: ${fSize};
         }
-        /* Безопасная верстка под Iframe Genially без использования 100vh */
-        html, body { 
-            width: 100%; 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            background: var(--bg);
+        
+        /* 
+          РЕШЕНИЕ ПРОБЛЕМЫ С РАСТЯГИВАНИЕМ IFRAME:
+          Убраны 'vh' единицы. Высота теперь определяется контентом, что предотвращает "схлопывание" экрана в Genially.
+        */
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
         }
         body { 
+            margin: 0;
+            background: var(--bg); 
             color: var(--text); 
-            /* Красивый системный шрифт, не блокирующийся CSP */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            padding: 10px; 
+            font-family: ${font}; 
+            padding: 12px; 
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -527,26 +522,17 @@
             background: var(--card); 
             border: 2px solid var(--block); 
             border-radius: 12px; 
-            padding: 16px; 
+            padding: 15px; 
             width: 100%; 
-            max-width: 580px;
             box-sizing: border-box; 
             display: flex; 
             flex-direction: column; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
-            min-height: 380px; /* Фиксированный минимум без бесконечного растягивания */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6); 
+            /* min-height с vh удален, чтобы избежать проблем с iframe */
         }
-        .header { 
-            font-size: 14px;
-            text-align: center; 
-            text-transform: uppercase; 
-            color: var(--btn2); 
-            margin-bottom: 12px; 
-            font-weight: bold; 
-            letter-spacing: 1px;
-        }
-        .sentence { font-size: var(--fsize); text-align: center; margin-bottom: 18px; line-height: 1.4; font-weight: 500; }
-        .zone-title { font-size: 11px; opacity: 0.7; text-transform: uppercase; margin-bottom: 5px; text-align: center; font-weight: bold; }
+        .header { font-family: 'Orbitron', sans-serif; text-align: center; text-transform: uppercase; color: var(--btn2); margin-bottom: 10px; font-weight: bold; letter-spacing: 1px;}
+        .sentence { font-size: var(--fsize); text-align: center; margin-bottom: 20px; line-height: 1.4; font-weight: 500; }
+        .zone-title { font-size: 11px; color: #a39cb5; text-transform: uppercase; margin-bottom: 5px; text-align: center; font-weight: bold; }
         
         .palette, .ans-zone { 
             display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; 
@@ -555,48 +541,19 @@
         .ans-zone { border: 2px dashed var(--block); min-height: calc(var(--bsize) + 12px); }
         
         .block { 
-            width: var(--bsize); 
-            height: var(--bsize); 
-            background: rgba(0,0,0,0.6); 
-            border: 2px solid var(--block); 
-            border-radius: 6px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            user-select: none; 
-            transition: transform 0.1s; 
-            color: var(--block);
-            box-sizing: border-box;
+            width: var(--bsize); height: var(--bsize); background: rgba(0,0,0,0.6); 
+            border: 2px solid var(--block); border-radius: 6px; display: flex; 
+            align-items: center; justify-content: center; cursor: pointer; user-select: none; 
+            transition: transform 0.1s; color: var(--block); box-sizing: border-box;
         }
         .block:hover { transform: scale(1.05); }
         
-        .svg-icon {
-            width: 75%;
-            height: 75%;
-            display: block;
-        }
-        .t-txt { font-weight: bold; color: var(--block); font-size: 13px; }
-        .t-sym { font-size: 22px; font-weight: bold; color: var(--block); }
+        .svg-icon { width: 75%; height: 75%; display: block; }
+        .t-txt { font-weight: bold; font-size: 13px; }
+        .t-sym { font-size: 22px; font-weight: bold; }
         
-        .btn-row { 
-            display: flex; gap: 10px; 
-            margin-top: 10px;
-        }
-        .btn { 
-            flex: 1; 
-            background: linear-gradient(90deg, var(--btn1), var(--btn2)); 
-            border: none; 
-            color: white; 
-            padding: 12px; 
-            font-weight: bold; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            font-family: inherit; 
-            font-size: 13px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-        }
+        .btn-row { display: flex; gap: 10px; margin-top: auto; }
+        .btn { flex: 1; background: linear-gradient(90deg, var(--btn1), var(--btn2)); border: none; color: white; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-family: inherit; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .btn-reset { background: #444; }
         .fb { text-align: center; font-weight: bold; min-height: 22px; margin: 10px 0; font-size: 15px; }
     </style>
@@ -605,17 +562,17 @@
     <div class="game-card">
         <div>
             <div class="header">Схема предложения</div>
-            <div class="sentence">"${sentence}"</div>
+            <div class="sentence">${sentence}</div>
             <div class="zone-title">Составьте схему здесь:</div>
             <div class="ans-zone" id="ans"></div>
             <div class="zone-title">Палитра блоков:</div>
-            <div class="palette">
+            <div class="palette" id="palette">
                 <div class="block" data-type="main-l"><span class="t-sym">[</span></div>
                 <div class="block" data-type="main-r"><span class="t-sym">]</span></div>
                 <div class="block" data-type="sub-l"><span class="t-sym">(</span></div>
                 <div class="block" data-type="sub-r"><span class="t-sym">)</span></div>
                 <div class="block" data-type="subj"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
-                <div class="block" data-type="pred"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
+                <div class="block" data-type="pred"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
                 <div class="block" data-type="obj"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg></div>
                 <div class="block" data-type="attr"><svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
                 <div class="block" data-type="adv"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div>
@@ -637,13 +594,18 @@
     </div>
 
     ${sOpen}
-    (function() {
+        /*
+          РЕШЕНИЕ ПРОБЛЕМЫ С DOMContentLoaded:
+          Скрипт размещен в конце <body>. К моменту его выполнения, весь DOM выше уже гарантированно загружен.
+          Поэтому нет необходимости в событии 'DOMContentLoaded', которое ненадежно в iframe. 
+          Код инициализации выполняется немедленно.
+        */
         const target = ${schemaStr}; 
         let user = [];
         const tpl = {
             'main-l': '<span class="t-sym">[</span>', 'main-r': '<span class="t-sym">]</span>', 'sub-l': '<span class="t-sym">(</span>', 'sub-r': '<span class="t-sym">)</span>',
             'subj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
-            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
+            'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
             'obj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg>', 
             'attr': '<svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 
             'adv': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
@@ -678,19 +640,17 @@
             fbMessage.innerText = ok ? 'Верно! Отличная работа! 🏆' : 'Неверно, попробуйте снова. ❌';
         }
 
-        // Мгновенная инициализация (Игнорируем нестабильный DOMContentLoaded)
-        document.querySelectorAll('.palette .block').forEach(block => {
+        // Прямая инициализация обработчиков
+        document.querySelectorAll('#palette .block').forEach(block => {
             block.addEventListener('click', (event) => {
-                const type = event.currentTarget.dataset.type;
-                add(type);
+                add(event.currentTarget.dataset.type);
             });
         });
 
         document.getElementById('resetBtn').addEventListener('click', reset);
         document.getElementById('checkBtn').addEventListener('click', check);
 
-        draw(); 
-    })();
+        draw(); // Первоначальная отрисовка
     ${sClose}
 </body>
 </html>`;
@@ -704,8 +664,11 @@
             copyText.select();
             
             try {
-                if (navigator.clipboard) { navigator.clipboard.writeText(copyText.value); } 
-                else { document.execCommand('copy'); }
+                if (navigator.clipboard) { 
+                    navigator.clipboard.writeText(copyText.value); 
+                } else { 
+                    document.execCommand('copy'); 
+                }
                 const btn = document.getElementById('copyBtn');
                 btn.innerText = 'Скопирован!'; btn.style.background = '#00ff66'; btn.style.color = '#000';
                 setTimeout(() => {
