@@ -108,7 +108,7 @@
             --g-block-size: 45px;
             --g-font-size: 18px;
             background: var(--g-bg-card);
-            border: 2px dashed var(--g-btn-color1);
+            border: 2px solid var(--g-frame-color, #00f0ff);
             border-radius: 12px;
             padding: 15px;
             width: 100%;
@@ -185,6 +185,7 @@
             <label for="exampleSelect">Примеры:</label>
             <select id="exampleSelect" onchange="selectExample(Number(this.value))"></select>
             <div class="row"><button class="btn" onclick="addExample()">Добавить пример</button><button class="btn btn-reset" id="deleteExample" onclick="deleteExample()">Удалить пример</button></div>
+            <p style="font-size:12px;color:#a39cb5">Добавляйте любое количество примеров — лимит не установлен.</p>
             <label>Предложение для ученика:</label>
             <textarea id="sentenceInput" rows="2">Испугавшись шороха, маленькая птичка стремительно взлетела вверх.</textarea>
 
@@ -212,6 +213,7 @@
                 <div class="color-item"><label>Кнопки (Цвет 1)</label><input type="color" id="colBtn1" value="#8a2be2" onchange="updateStyles()"></div>
                 <div class="color-item"><label>Кнопки (Цвет 2)</label><input type="color" id="colBtn2" value="#00f0ff" onchange="updateStyles()"></div>
                 <div class="color-item"><label>Цвет текста</label><input type="color" id="colText" value="#ffffff" onchange="updateStyles()"></div>
+                <div class="color-item"><label for="colFrame">Цвет рамки окна</label><input type="color" id="colFrame" value="#00f0ff" onchange="updateStyles()"></div>
                 <div class="color-item"><label>Цвет блоков</label><input type="color" id="colBlock" value="#00f0ff" onchange="updateStyles()"></div>
             </div>
 
@@ -232,6 +234,12 @@
             </div>
 
             <div class="output-box">
+                <div class="row"><button class="btn" onclick="saveProject()">Сохранить проект</button><button class="btn" onclick="document.getElementById('projectFile').click()">Загрузить проект</button></div>
+                <input id="projectFile" type="file" accept=".json,application/json" hidden onchange="loadProjectFile(this)">
+                <button class="btn" onclick="downloadGame()">Скачать HTML-файл</button>
+                <button class="btn btn-reset" id="compactBtn" aria-pressed="false" onclick="toggleCompactCode()">Облегчить код</button>
+                <p id="codeSize" aria-live="polite" style="font-size:13px;color:#a39cb5"></p>
+                <p id="projectStatus" role="status" style="font-size:13px"></p>
                 <textarea id="codeOutput" style="display: none;" readonly></textarea>
                 <button type="button" class="btn" id="copyBtn" onclick="copyGeneratedCode()">Скопировать код игры</button>
             </div>
@@ -261,6 +269,7 @@
         let targetSchema = ['ger', 'comma', 'attr', 'subj', 'adv', 'pred', 'adv', 'dot'];
         let userSchema = [];
 
+        let compactCode = false;
         let activeExample = 0;
         const examples = [{sentence: document.getElementById('sentenceInput').value, schema: [...targetSchema], answer: []}];
         function saveExample() {
@@ -341,8 +350,9 @@
             gs.style.setProperty('--g-btn-color1', document.getElementById('colBtn1').value);
             gs.style.setProperty('--g-btn-color2', document.getElementById('colBtn2').value);
             gs.style.setProperty('--g-text-color', document.getElementById('colText').value);
+            gs.style.setProperty('--g-frame-color', document.getElementById('colFrame').value);
             gs.style.setProperty('--g-block-color', document.getElementById('colBlock').value);
-            gs.style.setProperty('--g-block-size', document.getElementById('sizeBlock').value + 'px');
+            gs.style.setProperty('--g-block-size', blockSize() + 'px');
             gs.style.setProperty('--g-font-size', document.getElementById('fontSizeSel').value + 'px');
             gs.style.fontFamily = document.getElementById('fontSel').value;
             generateEmbedCode();
@@ -375,7 +385,8 @@
 
         function generateEmbedCode() {
             saveExample(); renderExampleControls();
-            const cBg = document.getElementById('transparentBg').checked ? 'transparent' : document.getElementById('colBg').value, cCard = document.getElementById('transparentCard').checked ? 'transparent' : document.getElementById('colCard').value, cBtn1 = document.getElementById('colBtn1').value, cBtn2 = document.getElementById('colBtn2').value, cText = document.getElementById('colText').value, cBlock = document.getElementById('colBlock').value, size = document.getElementById('sizeBlock').value + 'px', fSize = document.getElementById('fontSizeSel').value + 'px';
+            const cBg = document.getElementById('transparentBg').checked ? 'transparent' : document.getElementById('colBg').value, cCard = document.getElementById('transparentCard').checked ? 'transparent' : document.getElementById('colCard').value, cBtn1 = document.getElementById('colBtn1').value, cBtn2 = document.getElementById('colBtn2').value, cText = document.getElementById('colText').value, cBlock = document.getElementById('colBlock').value, size = blockSize() + 'px', fSize = document.getElementById('fontSizeSel').value + 'px';
+            const cFrame = document.getElementById('colFrame').value;
             const examplesStr = JSON.stringify(examples.map(({sentence, schema}) => ({sentence, schema}))).replace(/</g, '\\u003c');
             const sOpen = '<' + 'script>', sClose = '<' + '/script>';
 
@@ -383,7 +394,7 @@
             const outputCode = `<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>ИНтерактивная схема предложения</title>
+    <title>Схема предложения</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -393,7 +404,8 @@
             --btn1: ${cBtn1}; 
             --btn2: ${cBtn2}; 
             --text: ${cText}; 
-            --block: ${cBlock}; 
+            --block: ${cBlock};
+            --frame: ${cFrame}; 
             --bsize: ${size}; 
             --fsize: ${fSize}; 
         }
@@ -423,7 +435,7 @@
         }
         .game-card { 
             background: var(--card) !important; 
-            border: 2px solid var(--block) !important; 
+            border: 2px solid var(--frame) !important; 
             border-radius: 20px !important; 
             padding: 20px 25px !important; 
             width: 100% !important; 
@@ -549,18 +561,14 @@
 <body>
     <div class="wrapper">
         <div class="game-card">
-            <div class="header" style="text-transform:none!important">ИНтерактивная схема предложения</div>
             <div class="page-nav"><button id="prev">← Назад</button><span id="pageCount" aria-live="polite"></span><button id="next">Вперёд →</button></div>
             <div class="sentence" id="sentence"></div>
             <div class="zone-title">Составьте схему здесь:</div>
             <div class="ans-zone" id="ans"></div>
             <div class="zone-title">Палитра блоков:</div>
-            <div class="palette">
-                <div class="block" data-type="main-l"><span class="t-sym">[</span></div><div class="block" data-type="main-r"><span class="t-sym">]</span></div><div class="block" data-type="sub-l"><span class="t-sym">(</span></div><div class="block" data-type="sub-r"><span class="t-sym">)</span></div><div class="block" data-type="subj"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div><div class="block" data-type="pred"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div><div class="block" data-type="obj"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg></div><div class="block" data-type="attr"><svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div><div class="block" data-type="adv"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div><div class="block" data-type="homo"><svg class="svg-icon" viewBox="0 0 40 40"><circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="3"/></svg></div><div class="block" data-type="part"><span class="t-txt">/~~/</span></div><div class="block" data-type="ger"><span class="t-txt">/._./</span></div><div class="block" data-type="comma"><span class="t-sym">,</span></div><div class="block" data-type="dot"><span class="t-sym">.</span></div><div class="block" data-type="dash"><span class="t-sym">—</span></div><div class="block" data-type="colon"><span class="t-sym">:</span></div><div class="block" data-type="semi"><span class="t-sym">;</span></div>
-            </div>
+            <div class="palette"></div>
             <div class="fb" id="fb"></div>
             <div class="btn-row"><button class="btn btn-reset" id="resetBtn">Сбросить</button><button class="btn" id="checkBtn">Проверить</button></div>
-            <footer class="copyright">Все права защищены и принадлежат Гальмиз Марии Александровне</footer>
         </div>
     </div>
     ${sOpen}
@@ -587,6 +595,7 @@
         const ansZone = document.getElementById('ans'), fbMessage = document.getElementById('fb');
         function draw() { fbMessage.textContent = ''; ansZone.innerHTML = ''; user.forEach((t, i) => { const e = document.createElement('div'); e.className = 'block'; e.innerHTML = tpl[t]; e.addEventListener('click', () => {user.splice(i,1); draw();}); ansZone.appendChild(e); }); }
         function check() { if(!user.length) { fbMessage.style.color='#ff33a3'; fbMessage.innerText='Схема пуста!'; return; } const ok = JSON.stringify(user) === JSON.stringify(examples[current].schema); fbMessage.style.color = ok ? 'var(--btn2)' : '#ff33a3'; fbMessage.innerText = ok ? 'Верно! 🏆' : 'Неверно. ❌'; }
+        Object.keys(tpl).forEach(type => { const block = document.createElement('button'); block.type = 'button'; block.className = 'block'; block.dataset.type = type; block.innerHTML = tpl[type]; document.querySelector('.palette').appendChild(block); });
         document.querySelectorAll('.palette .block').forEach(b => b.addEventListener('click', e => { user.push(e.currentTarget.dataset.type); draw(); }));
         document.getElementById('resetBtn').addEventListener('click', () => {user.length = 0; draw(); fbMessage.innerText='';});
         document.getElementById('checkBtn').addEventListener('click', check);
@@ -595,10 +604,79 @@
     ${sClose}
 </body>
 </html>`;
-            document.getElementById('codeOutput').value = outputCode;
+            const result = compactCode ? compactHTML(outputCode) : outputCode;
+            document.getElementById('codeOutput').value = result;
+            const originalSize = new Blob([outputCode]).size, resultSize = new Blob([result]).size;
+            document.getElementById('codeSize').textContent = 'Размер кода: ' + (resultSize / 1024).toFixed(1) + ' КБ' + (compactCode ? ' · уменьшен на ' + Math.round((1 - resultSize / originalSize) * 100) + '%' : ' · обычная версия');
+            document.getElementById('compactBtn').textContent = compactCode ? 'Вернуть обычный код' : 'Облегчить код';
+            document.getElementById('compactBtn').setAttribute('aria-pressed', String(compactCode));
+        }
+
+        const settingIds = ['colBg', 'colCard', 'colBtn1', 'colBtn2', 'colText', 'colBlock', 'colFrame', 'sizeBlock', 'fontSizeSel', 'fontSel', 'transparentBg', 'transparentCard'];
+        function blockSize() { return Math.max(20, Math.min(120, Number(document.getElementById('sizeBlock').value) || 45)); }
+        function compactHTML(html) {
+            // Only compress generated markup and CSS. Preserve script and user text verbatim.
+            const scriptStart = html.indexOf('<' + 'script>');
+            const markup = html.slice(0, scriptStart)
+                .replace(/<!--[^]*?-->/g, '')
+                .replace(/<style>([^]*?)<\/style>/g, (_, css) => '<style>' + css.replace(/\/\*[^]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/ !important/g, '') + '</style>')
+                .replace(/>\s+</g, '><').trim();
+            return markup + html.slice(scriptStart);
+        }
+        function toggleCompactCode() { compactCode = !compactCode; generateEmbedCode(); }
+        function downloadText(text, filename, type) {
+            const url = URL.createObjectURL(new Blob([text], {type}));
+            const link = document.createElement('a'); link.href = url; link.download = filename;
+            document.body.appendChild(link); link.click(); link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+        function projectData() {
+            saveExample();
+            document.getElementById('sizeBlock').value = blockSize();
+            const settings = {};
+            settingIds.forEach(id => { const input = document.getElementById(id); settings[id] = input.type === 'checkbox' ? input.checked : input.value; });
+            return {format:'sentence-schema-project', version:1, examples:examples.map(({sentence, schema}) => ({sentence, schema:[...schema]})), settings, activeExample, compactCode};
+        }
+        function saveProject() {
+            downloadText(JSON.stringify(projectData(), null, 2), 'схема-проект.json', 'application/json');
+            document.getElementById('projectStatus').textContent = 'Проект сохранён в JSON: примеры, схемы и настройки оформления.';
+        }
+        function applyProject(data) {
+            if(!data || data.format !== 'sentence-schema-project' || data.version !== 1 || !Array.isArray(data.examples) || !data.examples.length || !data.settings || typeof data.settings !== 'object') throw new Error('Это не файл проекта схемы предложения.');
+            const loaded = data.examples.map(example => {
+                if(!example || typeof example.sentence !== 'string' || !Array.isArray(example.schema) || !example.schema.every(type => Object.hasOwn(blockTemplates, type))) throw new Error('В проекте есть некорректный пример или схема.');
+                return {sentence:example.sentence, schema:[...example.schema], answer:[]};
+            });
+            settingIds.forEach(id => {
+                const value = data.settings[id], input = document.getElementById(id);
+                if(input.type === 'checkbox') { if(typeof value !== 'boolean') throw new Error('Некорректная настройка прозрачности.'); }
+                else if(input.type === 'color') { if(typeof value !== 'string' || !/^#[0-9a-f]{6}$/i.test(value)) throw new Error('Некорректный цвет.'); }
+                else if(id === 'sizeBlock') { if(!Number.isFinite(Number(value)) || Number(value) < 20 || Number(value) > 120) throw new Error('Размер блока должен быть от 20 до 120 пикселей.'); }
+                else if(!Array.from(input.options).some(option => option.value === value)) throw new Error('Некорректная настройка шрифта.');
+            });
+            // Apply only after the entire file has passed validation.
+            examples.length = 0; loaded.forEach(example => examples.push(example));
+            activeExample = Number.isInteger(data.activeExample) ? Math.max(0, Math.min(data.activeExample, examples.length - 1)) : 0;
+            compactCode = data.compactCode === true;
+            settingIds.forEach(id => { const input = document.getElementById(id); if(input.type === 'checkbox') input.checked = data.settings[id]; else input.value = data.settings[id]; });
+            loadExample(); updateStyles();
+        }
+        async function loadProjectFile(input) {
+            const file = input.files[0]; if(!file) return;
+            try {
+                const data = JSON.parse(await file.text()); applyProject(data);
+                document.getElementById('projectStatus').textContent = 'Проект загружен. Примеров: ' + examples.length + '.';
+            } catch(error) { document.getElementById('projectStatus').textContent = 'Не удалось загрузить проект: ' + error.message; }
+            finally { input.value = ''; }
+        }
+        function downloadGame() {
+            generateEmbedCode();
+            downloadText(document.getElementById('codeOutput').value, 'схема-игра.html', 'text/html;charset=utf-8');
+            document.getElementById('projectStatus').textContent = 'HTML-файл игры скачан' + (compactCode ? ' в облегчённом виде.' : '.');
         }
 
         async function copyGeneratedCode() {
+            generateEmbedCode();
             const copyText = document.getElementById('codeOutput');
             copyText.style.display = 'block';
             copyText.select();
