@@ -226,7 +226,7 @@
 
             <div class="row" style="margin-top: 10px;">
                 <div>
-                    <label>Шрифт интерфейса (редактор):</label>
+                    <label>Шрифт игры:</label>
                     <select id="fontSel" onchange="updateStyles()">
                         <option value="'Montserrat', sans-serif">Montserrat</option><option value="'Comfortaa', sans-serif">Comfortaa</option><option value="'Rubik', sans-serif">Rubik</option><option value="'PT Sans', sans-serif">PT Sans</option><option value="'Roboto Slab', serif">Roboto Slab</option><option value="'Caveat', cursive">Caveat</option><option value="'Roboto', sans-serif">Roboto</option><option value="'Orbitron', sans-serif">Orbitron</option>
                     </select>
@@ -247,20 +247,10 @@
 
         <div class="panel preview-box">
             <div class="panel-title" style="width:100%;">Предпросмотр игры</div>
-            <div class="subtitle" style="margin-bottom:10px;">Так игра растянется в Genially</div>
+            <div class="subtitle" style="margin-bottom:10px;">Игра для вставки в Genially</div>
             
-            <div class="game-screen" id="gameScreen">
-                <div class="page-nav"><button id="previewPrev" onclick="selectExample(activeExample - 1)">← Назад</button><span id="previewCount" aria-live="polite"></span><button id="previewNext" onclick="selectExample(activeExample + 1)">Вперёд →</button></div>
-                <div class="sentence-display" id="previewSentence">...</div>
-                <div><div style="font-size:11px; color:#a39cb5; margin-bottom:5px; text-align:center;">ВАША СХЕМА:</div><div class="answer-zone" id="userAnswerZone"></div></div>
-                <div><div style="font-size:11px; color:#a39cb5; margin-bottom:5px; text-align:center;">ПАЛИТРА БЛОКОВ:</div>
-                    <div class="blocks-palette" style="background: transparent; padding: 0;">
-                        <div class="schema-block" onclick="userAddBlock('main-l')" title="Главное нач."><div class="symbol-block">[</div></div><div class="schema-block" onclick="userAddBlock('main-r')" title="Главное кон."><div class="symbol-block">]</div></div><div class="schema-block" onclick="userAddBlock('sub-l')" title="Придаточное нач."><div class="symbol-block">(</div></div><div class="schema-block" onclick="userAddBlock('sub-r')" title="Придаточное кон."><div class="symbol-block">)</div></div><div class="schema-block" onclick="userAddBlock('subj')" title="Подлежащее"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div><div class="schema-block" onclick="userAddBlock('pred')" title="Сказуемое"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div><div class="schema-block" onclick="userAddBlock('obj')" title="Дополнение"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg></div><div class="schema-block" onclick="userAddBlock('attr')" title="Определение"><svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div><div class="schema-block" onclick="userAddBlock('adv')" title="Обстоятельство"><svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div><div class="schema-block" onclick="userAddBlock('homo')" title="Однородный член"><svg class="svg-icon" viewBox="0 0 40 40"><circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="3"/></svg></div><div class="schema-block" onclick="userAddBlock('part')" title="Причастный оборот"><div class="participle">/~~/</div></div><div class="schema-block" onclick="userAddBlock('ger')" title="Деепричастный оборот"><div class="gerund">/._./</div></div><div class="schema-block" onclick="userAddBlock('comma')" title="Запятая"><div class="symbol-block">,</div></div><div class="schema-block" onclick="userAddBlock('dot')" title="Точка"><div class="symbol-block">.</div></div><div class="schema-block" onclick="userAddBlock('dash')" title="Тире"><div class="symbol-block">—</div></div><div class="schema-block" onclick="userAddBlock('colon')" title="Двоеточие"><div class="symbol-block">:</div></div><div class="schema-block" onclick="userAddBlock('semi')" title="Точка с запятой"><div class="symbol-block">;</div></div>
-                    </div>
-                </div>
-                <div class="feedback-msg" id="feedbackMessage"></div>
-                <div class="row" style="margin-top: 10px;"><button class="btn btn-reset" onclick="clearUserAnswer()">Сбросить</button><button class="btn" onclick="checkUserAnswer()">Проверить схему</button></div>
-            </div>
+            <iframe id="gamePreview" title="Предпросмотр игры" sandbox="allow-scripts" style="display:block;width:100%;height:650px;border:0;background:transparent;"></iframe>
+            <p style="font-size:12px;color:#a39cb5">Предпросмотр использует тот же код, что и игра. Перенос блоков зависит от ширины окна в Genially.</p>
         </div>
     </div>
 
@@ -269,6 +259,7 @@
         let targetSchema = ['ger', 'comma', 'attr', 'subj', 'adv', 'pred', 'adv', 'dot'];
         let userSchema = [];
 
+        let gameHTML = '';
         let compactCode = false;
         let activeExample = 0;
         const examples = [{sentence: document.getElementById('sentenceInput').value, schema: [...targetSchema], answer: []}];
@@ -285,9 +276,6 @@
             });
             select.value = activeExample;
             document.getElementById('deleteExample').disabled = examples.length === 1;
-            document.getElementById('previewPrev').disabled = activeExample === 0;
-            document.getElementById('previewNext').disabled = activeExample === examples.length - 1;
-            document.getElementById('previewCount').textContent = (activeExample + 1) + ' / ' + examples.length;
         }
         function selectExample(index) {
             if(index < 0 || index >= examples.length || index === activeExample) return;
@@ -300,14 +288,9 @@
             document.getElementById('sentenceInput').value = examples[activeExample].sentence;
             targetSchema = [...examples[activeExample].schema];
             userSchema = [...examples[activeExample].answer];
-            updatePreviewSentence(); renderTargetSchema(); renderUserAnswer();
-            document.getElementById('feedbackMessage').textContent = '';
-            if(!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                const card = document.getElementById('gameScreen');
-                card.getAnimations().forEach(animation => animation.cancel());
-                card.animate([{transform:'perspective(1000px) rotateY(' + (direction * 18) + 'deg)', opacity:.3}, {transform:'perspective(1000px) rotateY(0deg)', opacity:1}], {duration:380, easing:'ease-out'});
-            }
+            updatePreviewSentence(); renderTargetSchema();
         }
+
         function addExample() {
             saveExample(); examples.push({sentence:'', schema:[], answer:[]});
             activeExample = examples.length - 1; loadExample();
@@ -326,7 +309,7 @@
             updateStyles();
         };
 
-        function updatePreviewSentence() { document.getElementById('previewSentence').innerText = document.getElementById('sentenceInput').value; generateEmbedCode(); }
+        function updatePreviewSentence() { generateEmbedCode(); }
         function addBlockToAnswer() { targetSchema.push(document.getElementById('blockSelector').value); renderTargetSchema(); generateEmbedCode(); }
         function clearTargetSchema() { targetSchema = []; renderTargetSchema(); generateEmbedCode(); }
 
@@ -343,60 +326,24 @@
             });
         }
 
-        function updateStyles() {
-            const gs = document.getElementById('gameScreen');
-            gs.style.setProperty('--g-bg-card', document.getElementById('transparentCard').checked ? 'transparent' : document.getElementById('colCard').value);
-            gs.parentElement.style.background = document.getElementById('transparentBg').checked ? 'transparent' : document.getElementById('colBg').value;
-            gs.style.setProperty('--g-btn-color1', document.getElementById('colBtn1').value);
-            gs.style.setProperty('--g-btn-color2', document.getElementById('colBtn2').value);
-            gs.style.setProperty('--g-text-color', document.getElementById('colText').value);
-            gs.style.setProperty('--g-frame-color', document.getElementById('colFrame').value);
-            gs.style.setProperty('--g-block-color', document.getElementById('colBlock').value);
-            gs.style.setProperty('--g-block-size', blockSize() + 'px');
-            gs.style.setProperty('--g-font-size', document.getElementById('fontSizeSel').value + 'px');
-            gs.style.fontFamily = document.getElementById('fontSel').value;
-            generateEmbedCode();
-        }
-
-        function userAddBlock(type) { userSchema.push(type); renderUserAnswer(); }
-        
-        function renderUserAnswer() {
-            document.getElementById('feedbackMessage').textContent = '';
-            const container = document.getElementById('userAnswerZone');
-            container.innerHTML = '';
-            userSchema.forEach((type, index) => {
-                const el = document.createElement('div');
-                el.className = 'schema-block';
-                el.innerHTML = blockTemplates[type];
-                el.onclick = () => { userSchema.splice(index, 1); renderUserAnswer(); };
-                container.appendChild(el);
-            });
-        }
-
-        function clearUserAnswer() { userSchema = []; renderUserAnswer(); document.getElementById('feedbackMessage').innerText = ''; }
-
-        function checkUserAnswer() {
-            const fb = document.getElementById('feedbackMessage');
-            if (userSchema.length === 0) { fb.style.color = '#ff3333'; fb.innerText = 'Схема пуста! Составьте её из блоков.'; return; }
-            const isCorrect = JSON.stringify(userSchema) === JSON.stringify(targetSchema);
-            fb.style.color = isCorrect ? document.getElementById('colBtn2').value : '#ff33a3';
-            fb.innerText = isCorrect ? 'ОТЛИЧНО! Схема составлена верно! 🏆' : 'Есть ошибка. Попробуйте еще раз! ❌';
-        }
+        function updateStyles() { generateEmbedCode(); }
 
         function generateEmbedCode() {
             saveExample(); renderExampleControls();
             const cBg = document.getElementById('transparentBg').checked ? 'transparent' : document.getElementById('colBg').value, cCard = document.getElementById('transparentCard').checked ? 'transparent' : document.getElementById('colCard').value, cBtn1 = document.getElementById('colBtn1').value, cBtn2 = document.getElementById('colBtn2').value, cText = document.getElementById('colText').value, cBlock = document.getElementById('colBlock').value, size = blockSize() + 'px', fSize = document.getElementById('fontSizeSel').value + 'px';
+            const gameFont = document.getElementById('fontSel').value;
             const cFrame = document.getElementById('colFrame').value;
             const examplesStr = JSON.stringify(examples.map(({sentence, schema}) => ({sentence, schema}))).replace(/</g, '\\u003c');
             const sOpen = '<' + 'script>', sClose = '<' + '/script>';
 
-            // Генерируем оптимизированный код, полностью защищенный от масштабирования Genially
+            // One standalone document is shared by preview, download and embed.
             const outputCode = `<!DOCTYPE html>
 <html lang="ru">
 <head>
     <title>Схема предложения</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Comfortaa:wght@400;700&family=Rubik:wght@400;700&family=PT+Sans:wght@400;700&family=Roboto+Slab:wght@400;700&family=Caveat:wght@400;700&family=Roboto:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: ${cBg}; 
@@ -422,7 +369,7 @@
         }
         body { 
             color: var(--text) !important; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important; 
+            font-family: ${gameFont} !important; 
         }
         .wrapper { 
             display: flex !important; 
@@ -559,7 +506,7 @@
     </style>
 </head>
 <body>
-    <div class="wrapper">
+    <div class="wrapper" id="schemaGame">
         <div class="game-card">
             <div class="page-nav"><button id="prev">← Назад</button><span id="pageCount" aria-live="polite"></span><button id="next">Вперёд →</button></div>
             <div class="sentence" id="sentence"></div>
@@ -573,43 +520,58 @@
     </div>
     ${sOpen}
     (function() {
+        const root = document.getElementById('schemaGame');
+        if (!root || root.dataset.initialized === 'true') return;
+        root.dataset.initialized = 'true';
+        const find = id => root.querySelector('#' + id);
         const examples = ${examplesStr}, tpl = {'main-l': '<span class="t-sym">[</span>', 'main-r': '<span class="t-sym">]</span>', 'sub-l': '<span class="t-sym">(</span>', 'sub-r': '<span class="t-sym">)</span>', 'subj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 'pred': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="15" x2="35" y2="15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="25" x2="35" y2="25" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 'obj': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="5" y1="20" x2="35" y2="20" stroke="currentColor" stroke-width="3" stroke-dasharray="6,4" stroke-linecap="round"/></svg>', 'attr': '<svg class="svg-icon" viewBox="0 0 40 40"><path d="M 5,20 C 10,10 15,30 20,20 C 25,10 30,30 35,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 'adv': '<svg class="svg-icon" viewBox="0 0 40 40"><line x1="4" y1="20" x2="14" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="currentColor"/><line x1="26" y1="20" x2="36" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>', 'homo': '<svg class="svg-icon" viewBox="0 0 40 40"><circle cx="20" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="3"/></svg>', 'part': '<span class="t-txt">/~~/</span>', 'ger': '<span class="t-txt">/._./</span>', 'comma': '<span class="t-sym">,</span>', 'dot': '<span class="t-sym">.</span>', 'dash': '<span class="t-sym">—</span>', 'colon': '<span class="t-sym">:</span>', 'semi': '<span class="t-sym">;</span>'};
         let current = 0;
         const answers = examples.map(() => []);
         let user = answers[0];
         function showPage(direction = 0) {
             user = answers[current];
-            document.getElementById('sentence').textContent = examples[current].sentence;
-            document.getElementById('pageCount').textContent = (current + 1) + ' / ' + examples.length;
-            document.getElementById('prev').disabled = current === 0;
-            document.getElementById('next').disabled = current === examples.length - 1;
+            find('sentence').textContent = examples[current].sentence;
+            find('pageCount').textContent = (current + 1) + ' / ' + examples.length;
+            find('prev').disabled = current === 0;
+            find('next').disabled = current === examples.length - 1;
             draw();
             if(direction && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                const card = document.querySelector('.game-card');
+                const card = root.querySelector('.game-card');
                 card.getAnimations().forEach(animation => animation.cancel());
                 card.animate([{transform:'perspective(1000px) rotateY(' + (direction * 18) + 'deg)', opacity:.3}, {transform:'perspective(1000px) rotateY(0deg)', opacity:1}], {duration:380, easing:'ease-out'});
             }
         }
-        document.getElementById('prev').onclick = () => {if(current > 0) {current--; showPage(-1);}};
-        document.getElementById('next').onclick = () => {if(current < examples.length - 1) {current++; showPage(1);}};
-        const ansZone = document.getElementById('ans'), fbMessage = document.getElementById('fb');
+        find('prev').onclick = () => {if(current > 0) {current--; showPage(-1);}};
+        find('next').onclick = () => {if(current < examples.length - 1) {current++; showPage(1);}};
+        const ansZone = find('ans'), fbMessage = find('fb');
         function draw() { fbMessage.textContent = ''; ansZone.innerHTML = ''; user.forEach((t, i) => { const e = document.createElement('div'); e.className = 'block'; e.innerHTML = tpl[t]; e.addEventListener('click', () => {user.splice(i,1); draw();}); ansZone.appendChild(e); }); }
         function check() { if(!user.length) { fbMessage.style.color='#ff33a3'; fbMessage.innerText='Схема пуста!'; return; } const ok = JSON.stringify(user) === JSON.stringify(examples[current].schema); fbMessage.style.color = ok ? 'var(--btn2)' : '#ff33a3'; fbMessage.innerText = ok ? 'Верно! 🏆' : 'Неверно. ❌'; }
-        Object.keys(tpl).forEach(type => { const block = document.createElement('button'); block.type = 'button'; block.className = 'block'; block.dataset.type = type; block.innerHTML = tpl[type]; document.querySelector('.palette').appendChild(block); });
-        document.querySelectorAll('.palette .block').forEach(b => b.addEventListener('click', e => { user.push(e.currentTarget.dataset.type); draw(); }));
-        document.getElementById('resetBtn').addEventListener('click', () => {user.length = 0; draw(); fbMessage.innerText='';});
-        document.getElementById('checkBtn').addEventListener('click', check);
+        const palette = root.querySelector('.palette');
+        palette.replaceChildren();
+        Object.keys(tpl).forEach(type => { const block = document.createElement('button'); block.type = 'button'; block.className = 'block'; block.dataset.type = type; block.innerHTML = tpl[type]; palette.appendChild(block); });
+        palette.querySelectorAll('.block').forEach(b => b.addEventListener('click', e => { user.push(e.currentTarget.dataset.type); draw(); }));
+        find('resetBtn').addEventListener('click', () => {user.length = 0; draw(); fbMessage.innerText='';});
+        find('checkBtn').addEventListener('click', check);
         showPage(); 
     })();
     ${sClose}
 </body>
 </html>`;
             const result = compactCode ? compactHTML(outputCode) : outputCode;
-            document.getElementById('codeOutput').value = result;
-            const originalSize = new Blob([outputCode]).size, resultSize = new Blob([result]).size;
+            gameHTML = result;
+            const embed = embedHTML(result);
+            document.getElementById('codeOutput').value = embed;
+            const preview = document.getElementById('gamePreview');
+            if (preview.srcdoc !== result) preview.srcdoc = result;
+            const originalSize = new Blob([embedHTML(outputCode)]).size, resultSize = new Blob([embed]).size;
             document.getElementById('codeSize').textContent = 'Размер кода: ' + (resultSize / 1024).toFixed(1) + ' КБ' + (compactCode ? ' · уменьшен на ' + Math.round((1 - resultSize / originalSize) * 100) + '%' : ' · обычная версия');
             document.getElementById('compactBtn').textContent = compactCode ? 'Вернуть обычный код' : 'Облегчить код';
             document.getElementById('compactBtn').setAttribute('aria-pressed', String(compactCode));
+        }
+
+        function embedHTML(html) {
+            const escaped = html.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return '<iframe title="Схема предложения" width="100%" height="650" style="display:block;width:100%;height:100%;min-height:400px;border:0;background:transparent" sandbox="allow-scripts" srcdoc="' + escaped + '"></iframe>';
         }
 
         const settingIds = ['colBg', 'colCard', 'colBtn1', 'colBtn2', 'colText', 'colBlock', 'colFrame', 'sizeBlock', 'fontSizeSel', 'fontSel', 'transparentBg', 'transparentCard'];
@@ -619,7 +581,7 @@
             const scriptStart = html.indexOf('<' + 'script>');
             const markup = html.slice(0, scriptStart)
                 .replace(/<!--[^]*?-->/g, '')
-                .replace(/<style>([^]*?)<\/style>/g, (_, css) => '<style>' + css.replace(/\/\*[^]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/ !important/g, '') + '</style>')
+                .replace(/<style>([^]*?)<\/style>/g, (_, css) => '<style>' + css.replace(/\/\*[^]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1') + '</style>')
                 .replace(/>\s+</g, '><').trim();
             return markup + html.slice(scriptStart);
         }
@@ -671,7 +633,7 @@
         }
         function downloadGame() {
             generateEmbedCode();
-            downloadText(document.getElementById('codeOutput').value, 'схема-игра.html', 'text/html;charset=utf-8');
+            downloadText(gameHTML, 'схема-игра.html', 'text/html;charset=utf-8');
             document.getElementById('projectStatus').textContent = 'HTML-файл игры скачан' + (compactCode ? ' в облегчённом виде.' : '.');
         }
 
@@ -693,7 +655,8 @@
                     btn.style.color = '#fff';
                 }, 2000);
             } catch (err) {
-                alert('Не удалось скопировать.');
+                document.getElementById('projectStatus').textContent = 'Автоматическое копирование недоступно. Скопируйте выделенный код вручную.';
+                return;
             }
             copyText.style.display = 'none';
         }
