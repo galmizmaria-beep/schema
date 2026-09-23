@@ -287,6 +287,15 @@
         let gameHTML = '';
         let compactCode = false;
         let activeExample = 0;
+        let previewUpdateTimer = 0;
+
+        function schedulePreviewUpdate(delay = 160) {
+            clearTimeout(previewUpdateTimer);
+            previewUpdateTimer = setTimeout(() => {
+                previewUpdateTimer = 0;
+                generateEmbedCode();
+            }, delay);
+        }
         const examples = [{sentence: document.getElementById('sentenceInput').value, schema: [...targetSchema], answer: []}];
         function saveExample() {
             examples[activeExample] = {sentence: document.getElementById('sentenceInput').value, schema: [...targetSchema], answer: [...userSchema]};
@@ -319,7 +328,7 @@
         function addExample() {
             saveExample(); examples.push({sentence:'', schema:[], answer:[]});
             activeExample = examples.length - 1; loadExample();
-            document.getElementById('sentenceInput').focus();
+            document.getElementById('sentenceInput').focus({preventScroll:true});
         }
         function deleteExample() {
             if(examples.length === 1) return;
@@ -334,9 +343,9 @@
             updateStyles();
         };
 
-        function updatePreviewSentence() { generateEmbedCode(); }
-        function addBlockToAnswer() { targetSchema.push(document.getElementById('blockSelector').value); renderTargetSchema(); generateEmbedCode(); }
-        function clearTargetSchema() { targetSchema = []; renderTargetSchema(); generateEmbedCode(); }
+        function updatePreviewSentence() { schedulePreviewUpdate(); }
+        function addBlockToAnswer() { targetSchema.push(document.getElementById('blockSelector').value); renderTargetSchema(); schedulePreviewUpdate(60); }
+        function clearTargetSchema() { targetSchema = []; renderTargetSchema(); schedulePreviewUpdate(60); }
 
         function renderTargetSchema() {
             const container = document.getElementById('targetSchemaDisplay');
@@ -346,14 +355,16 @@
                 el.className = 'schema-block' + (type.startsWith('prep-') || type.startsWith('conj-') ? ' word-block' : '');
                 el.style.cssText = 'height:30px;' + (type.startsWith('prep-') || type.startsWith('conj-') ? '' : 'width:30px;');
                 el.innerHTML = blockTemplates[type];
-                el.onclick = () => { targetSchema.splice(index, 1); renderTargetSchema(); generateEmbedCode(); };
+                el.onclick = () => { targetSchema.splice(index, 1); renderTargetSchema(); schedulePreviewUpdate(60); };
                 container.appendChild(el);
             });
         }
 
-        function updateStyles() { generateEmbedCode(); }
+        function updateStyles() { schedulePreviewUpdate(80); }
 
         function generateEmbedCode() {
+            clearTimeout(previewUpdateTimer);
+            previewUpdateTimer = 0;
             saveExample(); renderExampleControls();
             const cBg = document.getElementById('transparentBg').checked ? 'transparent' : document.getElementById('colBg').value, cCard = document.getElementById('transparentCard').checked ? 'transparent' : document.getElementById('colCard').value, cBtn1 = document.getElementById('colBtn1').value, cBtn2 = document.getElementById('colBtn2').value, cText = document.getElementById('colText').value, cBlock = document.getElementById('colBlock').value, size = blockSize() + 'px', fSize = document.getElementById('fontSizeSel').value + 'px';
             const gameFont = document.getElementById('fontSel').value;
