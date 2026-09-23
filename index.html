@@ -322,7 +322,7 @@
             document.getElementById('sentenceInput').value = examples[activeExample].sentence;
             targetSchema = [...examples[activeExample].schema];
             userSchema = [...examples[activeExample].answer];
-            updatePreviewSentence(); renderTargetSchema();
+            renderTargetSchema(); syncPreviewData();
         }
 
         function addExample() {
@@ -338,14 +338,26 @@
 
         window.onload = function() {
             document.getElementById('sentenceInput').addEventListener('input', updatePreviewSentence);
-            updatePreviewSentence();
             renderTargetSchema();
-            updateStyles();
+            generateEmbedCode();
         };
 
-        function updatePreviewSentence() { schedulePreviewUpdate(); }
-        function addBlockToAnswer() { targetSchema.push(document.getElementById('blockSelector').value); renderTargetSchema(); schedulePreviewUpdate(60); }
-        function clearTargetSchema() { targetSchema = []; renderTargetSchema(); schedulePreviewUpdate(60); }
+        function syncPreviewData() {
+            saveExample();
+            renderExampleControls();
+            const preview = document.getElementById('gamePreview');
+            if (preview && preview.contentWindow) {
+                preview.contentWindow.postMessage({
+                    type: 'schema-preview-sync',
+                    examples: examples.map(({sentence, schema}) => ({sentence, schema:[...schema]})),
+                    activeExample
+                }, '*');
+            }
+        }
+
+        function updatePreviewSentence() { syncPreviewData(); }
+        function addBlockToAnswer() { targetSchema.push(document.getElementById('blockSelector').value); renderTargetSchema(); syncPreviewData(); }
+        function clearTargetSchema() { targetSchema = []; renderTargetSchema(); syncPreviewData(); }
 
         function renderTargetSchema() {
             const container = document.getElementById('targetSchemaDisplay');
@@ -355,7 +367,7 @@
                 el.className = 'schema-block' + (type.startsWith('prep-') || type.startsWith('conj-') ? ' word-block' : '');
                 el.style.cssText = 'height:30px;' + (type.startsWith('prep-') || type.startsWith('conj-') ? '' : 'width:30px;');
                 el.innerHTML = blockTemplates[type];
-                el.onclick = () => { targetSchema.splice(index, 1); renderTargetSchema(); schedulePreviewUpdate(60); };
+                el.onclick = () => { targetSchema.splice(index, 1); renderTargetSchema(); syncPreviewData(); };
                 container.appendChild(el);
             });
         }
@@ -625,6 +637,18 @@
         renderPalette();
         find('resetBtn').addEventListener('click', () => {user.length = 0; draw(); fbMessage.innerText='';});
         find('checkBtn').addEventListener('click', check);
+        window.addEventListener('message', event => {
+            const data = event.data;
+            if(!data || data.type !== 'schema-preview-sync' || !Array.isArray(data.examples)) return;
+            examples.splice(0, examples.length, ...data.examples.map(example => ({
+                sentence: typeof example.sentence === 'string' ? example.sentence : '',
+                schema: Array.isArray(example.schema) ? [...example.schema] : []
+            })));
+            while(answers.length < examples.length) answers.push([]);
+            if(answers.length > examples.length) answers.length = examples.length;
+            current = Math.max(0, Math.min(Number.isInteger(data.activeExample) ? data.activeExample : current, examples.length - 1));
+            showPage();
+        });
         showPage(); 
     })();
     ${sClose}
@@ -635,7 +659,12 @@
             const embed = embedHTML(result);
             document.getElementById('codeOutput').value = embed;
             const preview = document.getElementById('gamePreview');
-            if (preview.srcdoc !== result) preview.srcdoc = result;
+            if (preview.srcdoc !== result) {
+                preview.onload = () => syncPreviewData();
+                preview.srcdoc = result;
+            } else {
+                syncPreviewData();
+            }
             const originalSize = new Blob([embedHTML(outputCode)]).size, resultSize = new Blob([embed]).size;
             document.getElementById('codeSize').textContent = 'Размер кода: ' + (resultSize / 1024).toFixed(1) + ' КБ' + (compactCode ? ' · уменьшен на ' + Math.round((1 - resultSize / originalSize) * 100) + '%' : ' · обычная версия');
             document.getElementById('compactBtn').textContent = compactCode ? 'Вернуть обычный код' : 'Облегчить код';
