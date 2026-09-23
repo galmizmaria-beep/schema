@@ -180,7 +180,7 @@
 <body>
 
     <h1>ИНтерактивная схема предложения</h1>
-    <div class="subtitle">Полный контроль: блоки, цвета, адаптивность</div>
+    <div class="subtitle">Полный контроль: блоки, цвета, адаптивность · версия 2026.09.23.3</div>
 
     <div class="editor-container">
         <div class="panel">
@@ -344,7 +344,9 @@
 
         function syncPreviewData() {
             saveExample();
-            renderExampleControls();
+            const select = document.getElementById('exampleSelect');
+            const option = select.options[activeExample];
+            if (option) option.textContent = 'Пример ' + (activeExample + 1) + ': ' + (examples[activeExample].sentence || 'Новое предложение');
             const preview = document.getElementById('gamePreview');
             if (preview && preview.contentWindow) {
                 preview.contentWindow.postMessage({
@@ -459,7 +461,11 @@
             text-align: center !important; 
             margin-bottom: 10px !important; 
             line-height: 1.35 !important; 
-            font-weight: 500 !important; 
+            font-weight: 500 !important;
+            min-height: calc(var(--fsize) * 2.7) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         .zone-title { 
             font-size: 11px !important; 
@@ -640,6 +646,8 @@
         window.addEventListener('message', event => {
             const data = event.data;
             if(!data || data.type !== 'schema-preview-sync' || !Array.isArray(data.examples)) return;
+            const previousCurrent = current;
+            const previousCount = examples.length;
             examples.splice(0, examples.length, ...data.examples.map(example => ({
                 sentence: typeof example.sentence === 'string' ? example.sentence : '',
                 schema: Array.isArray(example.schema) ? [...example.schema] : []
@@ -647,7 +655,16 @@
             while(answers.length < examples.length) answers.push([]);
             if(answers.length > examples.length) answers.length = examples.length;
             current = Math.max(0, Math.min(Number.isInteger(data.activeExample) ? data.activeExample : current, examples.length - 1));
-            showPage();
+
+            if(current !== previousCurrent || examples.length !== previousCount) {
+                showPage();
+                return;
+            }
+
+            find('sentence').textContent = examples[current].sentence;
+            find('pageCount').textContent = (current + 1) + ' / ' + examples.length;
+            find('prev').disabled = current === 0;
+            find('next').disabled = current === examples.length - 1;
         });
         showPage(); 
     })();
